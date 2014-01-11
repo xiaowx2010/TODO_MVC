@@ -1,0 +1,154 @@
+
+.dlgTable {
+	width: 350px;
+	margin: 10px 0 0 25px;
+	table-layout: fixed;
+}
+
+.addtable {
+	table-layout: fixed;
+}
+.addtable td {
+	height: 38px;
+	line-height: 38px;
+	padding-left: 10px;
+}
+.addtable tr td:first-child {
+	text-align: right;
+}
+.addtable input[type="text"] {
+	width: 250px;
+	height: 18px;
+	line-height: 18px;
+	padding: 2px 5px;
+}
+.addtable input[type="password"] {
+	width: 250px;
+	height: 18px;
+	line-height: 18px;
+	padding: 2px 5px;
+}
+.addtable input[type="button"] {
+	padding: 3px 30px;
+	cursor:pointer;
+}
+.addtable input[type="submit"] {
+	padding: 3px 30px;
+	cursor:pointer;
+}
+.addtable input[type="checkbox"] {
+	margin-top: 0px;
+	cursor:pointer;
+}
+.addtable select {
+	width: 264px;
+	padding: 3px 6px;
+}
+
+/* jquery dialog 界面优化 */
+.ui-dialog .ui-widget-header{
+	border-bottom: 1px solid #aaa;
+	color: #222;
+	font-weight: bold;
+	-moz-border-radius: 4px 4px 0 0;
+	-webkit-border-radius: 4px 4px 0 0;
+	border-radius: 4px 4px 0 0;
+	background: #E4E9EC;
+    background:-webkit-gradient(linear, 0 0, 0 bottom, from(#F5F6F8), to(#DBE2E8));
+    background:-moz-linear-gradient(#F5F6F8, #DBE2E8);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#F5F6F8', endColorstr='#DBE2E8', GradientType='0');
+    padding: .3em 1em;
+    margin-bottom:1px;
+}
+/* jquery dialog 界面优化 */
+
+/* dataTable 界面优化 */
+/*#querytable_wrapper {
+	-moz-box-shadow: 2px 2px 6px #666;
+	-webkit-box-shadow: 2px 2px 6px #666; 
+	box-shadow: 2px 2px 6px #666;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+#querytable tbody {
+	border-left: 1px solid #AAA;
+	border-right: 1px solid #AAA;
+}
+#querytable .subTable td {
+	padding: 1px 10px;
+}
+#querytable a:hover {
+	text-decoration: underline;
+}
+.dataTables_wrapper .ui-widget-header {
+	border: 1px solid #AAA;
+}
+#querytable thead th:first-child { border-left: 1px solid #AAA; }
+#querytable thead th:last-child { border-right: 1px solid #AAA; }
+
+#querytable tbody tr.even:hover td.sorting_1 {
+	background-color: #DDFF75;
+}
+
+#querytable tbody tr.even:hover td.sorting_2 {
+	background-color: #E7FF9E;
+}
+
+#querytable tbody tr.even:hover td.sorting_3 {
+	background-color: #E2FF89;
+}
+
+#querytable tbody tr.odd:hover td.sorting_1 {
+	background-color: #D6FF5C;
+}
+
+#querytable tbody tr.odd:hover td.sorting_2 {
+	background-color: #E0FF84;
+}
+
+#querytable tbody tr.odd:hover td.sorting_3 {
+	background-color: #DBFF70;
+}
+#querytable span {
+	text-decoration: none;
+	color: #15C;
+	cursor:pointer;
+}*/
+/* dataTable 界面优化 */
+
+/* BootStrap Table */
+.table-bordered th, .table-bordered td {
+	text-align: center;
+	padding: 6px 0;
+}
+.add_dlg {
+	margin-left: 40px;
+}
+.add_dlg li {
+	margin: 8px 0;
+}
+.add_dlg label {
+	display: inline-block;
+	width: 70px;
+}
+.table-condensed td {
+	padding: 4px 5px;
+}
+/* BootStrap Table */
+.search_item {
+	margin-top: 8px;
+	overflow:hidden;
+}
+.search_item li{
+	float: left;
+	margin-left: 15px; 
+}
+
+.search_item input {
+	width: 165px;
+	padding: 2px 5px;
+}
+.search_item .hasDatepicker {
+	cursor: pointer;
+}

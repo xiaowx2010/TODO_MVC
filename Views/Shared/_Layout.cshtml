@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>任务管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/admin.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/uniform.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/select2.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/custom-theme/jquery-ui.css")" /> 
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/unicorn.main.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/unicorn.grey.css")" class="skin-color" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="@Url.Content("~/Content/js/jquery.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/jquery.ui.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/jquery.uniform.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/select2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/jquery.dataTables.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/unicorn.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/js/unicorn.tables.js")"></script>
+</head>
+<body>
+    <div id="header">
+        <h1>
+            <a href="./dashboard.html">Unicorn Admin</a></h1>
+    </div>
+    <div id="user-nav" class="navbar navbar-inverse">
+        <ul class="nav btn-group">
+            <li class="btn btn-inverse dropdown" id="menu-messages"><a href="#" data-toggle="dropdown"
+                data-target="#menu-messages" class="dropdown-toggle"><i class="icon icon-envelope">
+                </i><span class="text">消息</span> <span class="label label-important">5</span> <b
+                    class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li><a class="sAdd" title="" href="#">new message</a></li>
+                    <li><a class="sInbox" title="" href="#">inbox</a></li>
+                    <li><a class="sOutbox" title="" href="#">outbox</a></li>
+                    <li><a class="sTrash" title="" href="#">trash</a></li>
+                </ul>
+            </li>
+            <li class="btn btn-inverse"><a title="" href="/Account/LogOn"><i class="icon icon-share-alt">
+            </i><span class="text">登出</span></a></li>
+        </ul>
+    </div>
+	<div id="sidebar">
+		<a href="#" class="visible-phone"><i class="icon icon-th-list"></i> Tables</a>
+		<ul>
+			<li @if (ViewBag.ActiveType == "Home"){@Html.Raw("class=\"active\"")}><a href="/Home"><i class="icon icon-home"></i> <span>我的桌面</span></a></li>
+			<li @if(ViewBag.ActiveType == "MyTask"){@Html.Raw("class=\"active\"")}><a href="/Home/MyTask"><i class="icon icon-th-list"></i> <span>我的任务</span></a></li>
+			<li @if (ViewBag.ActiveType == "UserControl"){@Html.Raw("class=\"active\"")}><a href="/Home/UserControl"><i class="icon icon-user"></i> <span>员工管理</span></a></li>
+			<li @if (ViewBag.ActiveType == "TaskControl"){@Html.Raw("class=\"active\"")}><a href="/Home/TaskControl"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
+		</ul>
+	</div>
+    <div id="content">
+        @RenderBody()
+        <div class="row-fluid">
+			<div id="footer" class="span12">
+				2014 &copy; YuHe Co.Ltd
+			</div>
+		</div>
+    </div>
+</body>
+</html>
