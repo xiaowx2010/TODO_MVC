@@ -9,7 +9,7 @@ $(document).ready(function(){
 		"bJQueryUI": true,
 		"sPaginationType": "full_numbers",
 		"sDom": '<""l>t<"F"fp>',
-		"bFilter": false,
+		"bFilter": true,
 		"oLanguage": {
 	      "sLengthMenu": "每页显示 _MENU_ 条记录",
 	      "sZeroRecords": "对不起，查询不到任何相关数据",

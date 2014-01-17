@@ -19,7 +19,6 @@
     <script type="text/javascript" src="@Url.Content("~/Content/js/select2.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Content/js/jquery.dataTables.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Content/js/unicorn.js")"></script>
-    <script type="text/javascript" src="@Url.Content("~/Content/js/unicorn.tables.js")"></script>
 </head>
 <body>
     <div id="header">
@@ -49,7 +48,7 @@
 			<li @if (ViewBag.ActiveType == "Home"){@Html.Raw("class=\"active\"")}><a href="/Home"><i class="icon icon-home"></i> <span>我的桌面</span></a></li>
 			<li @if(ViewBag.ActiveType == "MyTask"){@Html.Raw("class=\"active\"")}><a href="/Home/MyTask"><i class="icon icon-th-list"></i> <span>我的任务</span></a></li>
 			<li @if (ViewBag.ActiveType == "UserControl"){@Html.Raw("class=\"active\"")}><a href="/Home/UserControl"><i class="icon icon-user"></i> <span>员工管理</span></a></li>
-			<li @if (ViewBag.ActiveType == "TaskControl"){@Html.Raw("class=\"active\"")}><a href="/Home/TaskControl"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
+			<li @if (ViewBag.ActiveType == "TaskControl"){@Html.Raw("class=\"active\"")}><a href="/Task"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
 		</ul>
 	</div>
     <div id="content">
