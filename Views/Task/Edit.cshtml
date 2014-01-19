@@ -1,5 +1,5 @@
 ﻿@using TODO.PersistObject.models
-@model List<TODO_Users>
+@model TODO_Tasks
 <link rel="stylesheet" href="@Url.Content("~/Content/css/datepicker.css")" />
 <div id="content-header">
 	<h1>任务管理</h1>
@@ -14,21 +14,21 @@
 					<span class="icon">
 						<i class="icon-align-justify"></i>									
 					</span>
-					<h5>新增任务</h5>
+					<h5>修改任务</h5>
 				</div>
 				<div class="widget-content nopadding">
-					@using (Html.BeginForm("Create", "Task", FormMethod.Post, new { @class = "form-horizontal", id = "create" }))
-                    {           
+					@using (Html.BeginForm("Edit", "Task", FormMethod.Post, new { @class = "form-horizontal", id = "create" }))
+     {           
 						<div class="control-group">
 							<label class="control-label">任务名:</label>
 							<div class="controls">
-								<input name="TaskName" type="text" />
+								<input name="TaskName" value="@Model.TaskName" type="text" />
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label">任务种类:</label>
 							<div class="controls">
-								<select name="TaskType">
+								<select name="TaskType" id="TaskType">
 								    <option>固定任务</option>
 								    <option>周期任务</option>
 								    <option>考核任务</option>
@@ -38,7 +38,7 @@
 						<div class="control-group">
 							<label class="control-label">优先级:</label>
 							<div class="controls">
-								<select name="Priority">
+								<select name="Priority" id="Priority">
 								    <option value="1">1</option>
 								    <option value="2">2</option>
 								    <option value="3">3</option>
@@ -54,32 +54,44 @@
 						<div class="control-group">
 							<label class="control-label">要求完成时间:</label>
 							<div class="controls">
-								<input name="TaskDeadLine" type="text" data-date="" data-date-format="yyyy/mm/dd" value="" class="datepicker" />
+								<input name="TaskDeadLine" type="text" data-date="" data-date-format="yyyy/mm/dd"  value="@Model.TaskDeadLine.Value.ToShortDateString()" class="datepicker" />
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label">任务简述:</label>
 							<div class="controls">
-								<textarea name="TaskRemark"></textarea>
+								<textarea name="TaskRemark">@Model.TaskRemark</textarea>
 							</div>
 						</div>
 						<div class="control-group">
 							<label class="control-label">负责人:</label>
 							<div class="controls">
-								<select name="TaskExecutor" style="width:80%" class="multiple__select" multiple="">
-                                @foreach (var obj in Model)
+                            @Html.ListBox("TaskExecutor", null, new { @class = "multiple__select", style = "width:80%", multiple = "" })
+                            @*@Html.ListBoxFor(x => x.TODO_Task_User, x*@
+								@*<select name="TaskExecutor" style="width:80%" class="multiple__select" multiple="">
+                                @foreach (var obj in (List<TODO_Users>)ViewData["userlist"])
                                 {
 									<option value="@obj.ID">@obj.PersonName</option>
                                 }
 								</select>
-                               @* @foreach (var obj in Model)
+                                @foreach (var obj in (List<TODO_Users>)ViewData["userlist"])
                                 {
                                     <label><input type="checkbox" value="@obj.ID" name="TaskExecutor_1" />@obj.PersonName</label>
                                 }*@
 							</div>
 						</div>
+                        foreach (var node in ViewData["nodelist"] as List<TODO_TaskNodes>)
+                        {
                         <div class="control-group">
-							<label class="control-label">任务节点:</label>
+                            <label class="control-label">任务节点:</label>
+							<div class="controls">
+								<textarea name="NodeRemark">@node.NodeName</textarea>
+                                <input type="button" class="btn btn-danger" value="删除任务节点" onclick="CreateTaskNode(this)" />
+							</div>
+						</div>
+                        }
+                        <div class="control-group">
+                            <label class="control-label">任务节点:</label>
 							<div class="controls">
 								<textarea name="NodeRemark"></textarea>
                                 <input type="button" class="btn btn-success" value="新增任务节点" onclick="CreateTaskNode(this)" />
@@ -88,9 +100,9 @@
 						<div class="form-actions">
 							<input type="submit" class="btn btn-primary" value="保存" />
                             <input type="button" onclick="SaveAndAssign()" style="margin-left:20px" class="btn btn-warning" value="保存并分配" />
-                            <input type="hidden" name="TaskStatus" id="TaskStatus" value="0" />
+                            <input type="hidden" name="TaskStatus" id="TaskStatus" value="@Model.TaskStatus" />
 						</div>
-                    }
+     }
 				</div>
 			</div>						
 		</div>
@@ -128,10 +140,16 @@
             }
     }
     $(document).ready(function () {
+        $("#TaskType").val("@Model.TaskType");
+        $("#Priority").val("@Model.Priority");
         $("#create").validate({
             rules: {
                 TaskName: {
                     required: true
+                },
+                TaskDeadLine: {
+                    required: true,
+                    date: true
                 },
             },
             errorClass: "help-inline",

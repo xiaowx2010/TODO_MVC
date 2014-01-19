@@ -284,6 +284,7 @@
     <Content Include="Views\Account\副本 LogOn.cshtml" />
     <None Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Task\Create.cshtml" />
+    <Content Include="Views\Task\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TODO.DAO\TODO.DAO.csproj">
