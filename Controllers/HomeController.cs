@@ -6,7 +6,8 @@ using System.Web.Mvc;
 
 namespace TODO.Controllers
 {
-    public class HomeController : Controller
+    using Custom;
+    public class HomeController : BaseController
     {
         public ActionResult Index()
         {

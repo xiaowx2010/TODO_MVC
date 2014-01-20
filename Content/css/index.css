@@ -1,0 +1,40 @@
+﻿.hide_css {
+	display: none;
+}
+
+.subTable {
+	width: 85%;
+	margin-left: 40px;
+	border-collapse: separate;
+}
+
+.subTable td:first-child{
+	width: 35%;
+}
+
+
+/* dataTable 界面优化 */
+#content-table tbody {
+	border-left: 1px solid #AAA;
+	border-right: 1px solid #AAA;
+}
+#content-table .subTable td {
+	padding: 1px 10px;
+}
+#content-table a:hover {
+	text-decoration: underline;
+}
+#content-table thead th:first-child { border-left: 1px solid #AAA; }
+#content-table thead th:last-child { border-right: 1px solid #AAA; }
+
+#content-table span {
+	text-decoration: none;
+	color: #15C;
+	cursor:pointer;
+}
+td.group {
+	background-color: #F0F1F2;
+	border-bottom: 1px solid #A19B9E;
+	border-top: 1px solid #A19B9E;
+	display: none;
+}

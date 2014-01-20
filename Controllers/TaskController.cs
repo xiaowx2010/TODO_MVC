@@ -7,18 +7,20 @@ using System.Transactions;
 
 namespace TODO.Controllers
 {
+    using Custom;
     using PersistObject.models;
     using DAO;
-    public class TaskController : Controller
+    public class TaskController : BaseController
     {
         //
         // GET: /Task/
+        [CustomAuthorizeAttribute]
         public ActionResult Index()
         {
             ViewBag.ActiveType = "TaskControl";
             TaskDataContext db = new TaskDataContext();
 
-            var tasklist = from t in db.TODO_Tasks select t;
+            var tasklist = from t in db.TODO_Tasks where t.ParentTaskID==null select t;
             
             return View(tasklist.ToList<TODO_Tasks>());
         }
@@ -241,6 +243,29 @@ namespace TODO.Controllers
             task.TaskDeadLine = Convert.ToDateTime(collection["DelayDate"]);
             db.SubmitChanges();
             return RedirectToAction("Index");
+
+        }
+
+        [HttpPost]
+        public ActionResult CreateChild(int id, FormCollection collection)
+        {
+
+            // TODO: Add creat logic here
+            string creatmsg = "";
+            int count = Convert.ToInt32(collection["child_count"]);
+            try
+            {
+                string msg = TaskDAO.Instance.CreateChildren(id, count);
+                if (msg != "success")
+                {
+                    creatmsg = "生成子任务失败！原因：" + msg;
+                }
+            }
+            catch (Exception ex)
+            {
+                creatmsg = "生成子任务失败！原因：" + ex.ToString();
+            }
+            return RedirectToAction("Index", new { operateMsg = creatmsg });
 
         }
     }

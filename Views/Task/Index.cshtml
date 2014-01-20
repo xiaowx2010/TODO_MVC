@@ -1,9 +1,10 @@
 ﻿@using TODO.PersistObject.models
 @model List<TODO_Tasks>
+<link rel="stylesheet" href="@Url.Content("~/Content/css/index.css")" />
 <script type="text/javascript">
     $(document).ready(function () {
 
-        $('.data-table').dataTable({
+        $('#content-table').dataTable({
             "aaSorting": [[0, "desc"]],
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
@@ -25,13 +26,53 @@
                     "sLast": " 最后一页 "
                 }
             },
+            "fnDrawCallback": function () {
+                var nTrs = $('#content-table .gradeA');
+                var iColspan = nTrs[0].getElementsByTagName('td').length;
+                var groupVal = "";
+                var sGroup = "";
+                var groupClass = "group_0";
+                for (var i = 0; i < nTrs.length; i++) {
+                    if (iColspan > 1) {
+                        var nGroup = document.createElement('tr');
+                        var nCell = document.createElement('td');
+                        nCell.colSpan = iColspan;
+                        nCell.align = "left";
+                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(8).attr("id");
+                        nCell.className = "group";
+                        nCell.innerHTML = nTrs.eq(i).find("td").eq(8).html();
+                        nGroup.appendChild(nCell);
+                        $(nGroup).insertAfter(nTrs[i]);
+                        groupVal = sGroup;
+                        groupClass = "group_" + i;
+                    }
+                    nTrs.eq(i).addClass(groupClass);
+                }
+            },
             "aoColumns": [
 			            null, null, null, null, null, null,
-			            { "asSorting": [] }, { "asSorting": [] }
+			            { "asSorting": [] }, { "asSorting": [] }, { "asSorting": [] }
 		            ]
         });
 
         $('select').select2();
+        $("#delay").validate({
+            rules: {
+                DelayDate: {
+                    required: true,
+                    date: true
+                },
+            },
+            errorClass: "help-inline",
+            errorElement: "span",
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents('.control-group').addClass('error');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents('.control-group').removeClass('error');
+            }
+        });
+        $('.datepicker').datepicker({dateFormat:"yy/mm/dd" });
     });
     </script>
 <div id="content-header">
@@ -67,7 +108,7 @@
                                             要求完成时间
                                         </th>
                                         <th width="100px">
-                                            处理人
+                                            任务状态
                                         </th>
                                         <th width="100px">
                                             快捷操作
@@ -75,6 +116,7 @@
                                         <th width="110px">
                                             
                                         </th>
+                                        <th class="hide_css">&nbsp;</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -85,7 +127,7 @@
                                             @obj.Priority
                                         </td>
                                         <td>
-                                            @obj.TaskName
+                                            @obj.TaskName <span onclick="toggleSubcat(@obj.ID)" >[展开]</span>
                                         </td>
                                         <td>
                                             @obj.TaskType
@@ -97,25 +139,43 @@
                                             @obj.TaskDeadLine.Value.ToShortDateString()
                                         </td>
                                         <td class="center">
-                                            是
+                                           @if (obj.TaskStatus == 0)
+                                           {@Html.Raw("未分配")}
+                                           else
+                                           {@Html.Raw("已分配")}
                                         </td>
                                         <td class="center">
                                             <div class="btn-group">
-                                                <button class="btn btn-small">生成子任务</button>
+                                                <button onclick="create_children(@obj.ID, 1)" class="btn btn-small">生成子任务</button>
                                                 <button data-toggle="dropdown" class="btn btn-small dropdown-toggle"><span class="caret"></span></button>
                                                 <ul class="dropdown-menu">
-                                                    <li><a href="#">生成2个子任务</a></li>
-                                                    <li><a href="#">生成3个子任务</a></li>
-                                                    <li><a href="#">生成4个子任务</a></li>
-                                                    <li><a href="#">生成5个子任务</a></li>
+                                                    <li><a href="#" onclick="create_children(@obj.ID, 2)">生成2个子任务</a></li>
+                                                    <li><a href="#" onclick="create_children(@obj.ID, 3)">生成3个子任务</a></li>
+                                                    <li><a href="#" onclick="create_children(@obj.ID, 4)">生成4个子任务</a></li>
+                                                    <li><a href="#" onclick="create_children(@obj.ID, 5)">生成5个子任务</a></li>
                                                 </ul>
 									        </div>
-                                        </td>@*
-                                           <a href="#DelayModal" data-toggle="modal">延期</a>*@
+                                        </td>
                                         <td class="center">
                                            <a href="#" onclick="addNewM(@obj.ID)">延期</a>|
                                            <a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a>|
                                            <a onclick="return confirm('确认要删除吗,子任务会一同删除！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">删除</a>
+                                        </td>
+                                        <td id="@obj.ID" class="hide_css">
+                                            <table class="subTable" border="0" cellpadding="0" cellspacing="0">
+                                            @foreach (var child in obj.Child_Tasks.ToList())
+                                            {
+                                                <tr>
+                                                    <td>@child.TaskName</td>
+                                                    <td style="width: 17%">进度</td>
+                                                    <td>
+                                                        <a href="#" onclick="addNewM(@child.ID)">延期</a>|
+                                                       <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>|
+                                                       <a onclick="return confirm('确认要删除吗！')" href="@Url.Action("Delete", "Task", new { id = @child.ID })">删除</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            </table>
                                         </td>
                                     </tr>
                                 }
@@ -125,10 +185,6 @@
                             <div title="任务延期" id="DelayModal" style="margin: 8px;display: none;">
                             @using (Html.BeginForm("Delay", "Task", FormMethod.Post, new { id = "delay" }))
                             {
-								@*<div class="modal-header">
-									<button data-dismiss="modal" class="close" type="button">×</button>
-									<h3>任务延期</h3>
-								</div>*@
 								<div class="modal-body">
 									<table cellpadding="0" cellspacing="0" class="addtable">
                                         <tr>
@@ -175,24 +231,26 @@
         closeDlg('DelayModal');
         return true;
     }
-            
-    $(document).ready(function () {
-        $("#delay").validate({
-            rules: {
-                DelayDate: {
-                    required: true,
-                    date: true
-                },
-            },
-            errorClass: "help-inline",
-            errorElement: "span",
-            highlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').addClass('error');
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).parents('.control-group').removeClass('error');
-            }
-        });
-        $('.datepicker').datepicker({dateFormat:"yy/mm/dd" });
-    });
+    function toggleSubcat(id) {
+		$("#group_" + id).toggle();
+    }
+    function create_children(tid, count) {
+        var temp = document.createElement("form");
+        temp.action = "@Url.Action("CreateChild", "Task")";
+        temp.method = "post";
+        temp.style.display = "none";
+        
+        var opt = document.createElement("textarea");
+        opt.name = "id";
+        opt.value = tid;
+        temp.appendChild(opt);
+
+        var opt_c = document.createElement("textarea");
+        opt_c.name = "child_count";
+        opt_c.value = count;
+        temp.appendChild(opt_c);
+        document.body.appendChild(temp);
+        temp.submit();
+        return temp;
+    }
 </script>
