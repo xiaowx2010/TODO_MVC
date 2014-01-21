@@ -32,6 +32,7 @@ namespace TODO.Custom
                 {
                     logFS = new FileStream(fileName, FileMode.Append);
                     sw = new StreamWriter(logFS, System.Text.ASCIIEncoding.UTF8);
+                    sw.WriteLine(DateTime.Now.ToString());
                     sw.WriteLine(msg);
                     sw.Close();
                     logFS.Close();

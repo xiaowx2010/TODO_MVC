@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using TODO.Models;
-using TODO.PersistObject.models;
+using TODO.DAO;
 
 namespace TODO.Controllers
 {
@@ -30,9 +30,13 @@ namespace TODO.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (Membership.ValidateUser(model.UserName, model.Password))
+                var user = UserDAO.Instance.CheckValidate(model.UserName, model.Password);
+                if ( user!= null)
                 {
                     FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
+                    Session["TODOUser"] = user;
+                    if (user.UserRole == 1)
+                        Session["UserRole"] = "Admin";
                     if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
                         && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
                     {
@@ -59,7 +63,7 @@ namespace TODO.Controllers
         public ActionResult LogOff()
         {
             FormsAuthentication.SignOut();
-
+            Session.Clear();
             return RedirectToAction("Index", "Home");
         }
 

@@ -68,6 +68,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Custom\BaseController.cs" />
     <Compile Include="Custom\Common.cs" />
     <Compile Include="Custom\CustomAuthorizeAttribute.cs" />
@@ -75,6 +76,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\SearchModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -283,13 +285,15 @@
     <Content Include="Views\Home\MyTask.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Home\UserControl.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Account\副本 LogOn.cshtml" />
     <None Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Task\Create.cshtml" />
     <Content Include="Views\Task\Edit.cshtml" />
+    <Content Include="Views\User\Create.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TODO.DAO\TODO.DAO.csproj">

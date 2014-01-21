@@ -47,7 +47,7 @@
 		<ul>
 			<li @if (ViewBag.ActiveType == "Home"){@Html.Raw("class=\"active\"")}><a href="/Home"><i class="icon icon-home"></i> <span>我的桌面</span></a></li>
 			<li @if(ViewBag.ActiveType == "MyTask"){@Html.Raw("class=\"active\"")}><a href="/Home/MyTask"><i class="icon icon-th-list"></i> <span>我的任务</span></a></li>
-			<li @if (ViewBag.ActiveType == "UserControl"){@Html.Raw("class=\"active\"")}><a href="/Home/UserControl"><i class="icon icon-user"></i> <span>员工管理</span></a></li>
+			<li @if (ViewBag.ActiveType == "UserControl"){@Html.Raw("class=\"active\"")}><a href="/User"><i class="icon icon-user"></i> <span>员工管理</span></a></li>
 			<li @if (ViewBag.ActiveType == "TaskControl"){@Html.Raw("class=\"active\"")}><a href="/Task"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
 		</ul>
 	</div>

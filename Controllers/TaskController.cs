@@ -82,8 +82,10 @@ namespace TODO.Controllers
                 return RedirectToAction("Index");
             }
 
-            catch
+            catch (Exception ex)
             {
+
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
                 return View();
             }
             
@@ -183,9 +185,10 @@ namespace TODO.Controllers
                 db.SubmitChanges();
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
                 Init_detail_date(db, task);
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
                 return View(task);
             }
         }
@@ -226,6 +229,7 @@ namespace TODO.Controllers
             }
             catch (Exception ex)
             {
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
                 delmsg = "删除失败！原因：" + ex.ToString();
             }
             return RedirectToAction("Index", new { operateMsg = delmsg });
@@ -263,6 +267,7 @@ namespace TODO.Controllers
             }
             catch (Exception ex)
             {
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
                 creatmsg = "生成子任务失败！原因：" + ex.ToString();
             }
             return RedirectToAction("Index", new { operateMsg = creatmsg });

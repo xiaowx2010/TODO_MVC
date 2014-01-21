@@ -13,7 +13,10 @@ namespace TODO.Custom
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             //base.OnAuthorization(filterContext);
-            filterContext.RequestContext.HttpContext.Response.Redirect("/");
+            if (filterContext.RequestContext.HttpContext.Session["TODOUser"] == null || filterContext.RequestContext.HttpContext.Session["UserRole"] != "Admin")
+            {
+                filterContext.RequestContext.HttpContext.Response.Redirect("/");
+            }
         }
         
     }
@@ -23,8 +26,7 @@ namespace TODO.Custom
     {
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-            
-            return false;
+            return httpContext.Session["TODOUser"] != null;
 
         }
         

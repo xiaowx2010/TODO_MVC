@@ -67,17 +67,6 @@
 							<label class="control-label">负责人:</label>
 							<div class="controls">
                             @Html.ListBox("TaskExecutor", null, new { @class = "multiple__select", style = "width:80%", multiple = "" })
-                            @*@Html.ListBoxFor(x => x.TODO_Task_User, x*@
-								@*<select name="TaskExecutor" style="width:80%" class="multiple__select" multiple="">
-                                @foreach (var obj in (List<TODO_Users>)ViewData["userlist"])
-                                {
-									<option value="@obj.ID">@obj.PersonName</option>
-                                }
-								</select>
-                                @foreach (var obj in (List<TODO_Users>)ViewData["userlist"])
-                                {
-                                    <label><input type="checkbox" value="@obj.ID" name="TaskExecutor_1" />@obj.PersonName</label>
-                                }*@
 							</div>
 						</div>
                         foreach (var node in ViewData["nodelist"] as List<TODO_TaskNodes>)

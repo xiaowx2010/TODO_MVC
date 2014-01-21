@@ -13,10 +13,10 @@ namespace TODO.Custom
             base.OnException(filterContext);
             filterContext.Result = View();
 
-            filterContext.Result = Redirect("/Error/ServerError.html");
+            //filterContext.Result = Redirect("/Error/ServerError.html");
             filterContext.ExceptionHandled = true;
             //把异常写入日志
-            Common.WriteFile(filterContext.Exception.Message, Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
+            Common.WriteFile(filterContext.Exception.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
         }
     }
 }
