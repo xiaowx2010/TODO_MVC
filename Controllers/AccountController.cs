@@ -37,6 +37,8 @@ namespace TODO.Controllers
                     Session["TODOUser"] = user;
                     if (user.UserRole == 1)
                         Session["UserRole"] = "Admin";
+                    else
+                        Session["UserRole"] = "User";
                     if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
                         && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
                     {

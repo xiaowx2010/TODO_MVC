@@ -55,7 +55,7 @@
 						<div class="control-group">
 							<label class="control-label">要求完成时间:</label>
 							<div class="controls">
-								<input name="TaskDeadLine" type="text" data-date="" data-date-format="yyyy/mm/dd" value="" class="datepicker" />
+								<input name="TaskDeadLine" id="TaskDeadLine" type="text" data-date="" data-date-format="yyyy/mm/dd" value="" class="datepicker" />
 							</div>
 						</div>
 						<div class="control-group">
@@ -67,7 +67,7 @@
 						<div class="control-group">
 							<label class="control-label">负责人:</label>
 							<div class="controls">
-								<select name="TaskExecutor" style="width:80%" class="multiple__select" multiple="">
+								<select name="TaskExecutor" id="TaskExecutor" style="width:80%" class="multiple__select" multiple="">
                                 @foreach (var obj in Model)
                                 {
 									<option value="@obj.ID">@obj.PersonName</option>
@@ -105,6 +105,11 @@
         if($("#TaskExecutor").val() == null)
         {
             alert("请选择处理人！");
+            return ;
+        }
+        if($("#TaskDeadLine").val() == null)
+        {
+            alert("要求完成时间！");
             return ;
         }
         $("#TaskStatus").val("1");

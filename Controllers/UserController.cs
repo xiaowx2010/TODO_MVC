@@ -10,7 +10,7 @@ namespace TODO.Controllers
     using Models;
     using DAO;
     using PersistObject.models;
-    
+    [AdminAuthorize]
     public class UserController : BaseController
     {
         //

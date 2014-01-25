@@ -1,0 +1,81 @@
+﻿@model TODO.Models.MyTaskListModel
+    <script type="text/javascript" src="@Url.Content("~/Content/js/unicorn.tables.js")"></script>
+<div id="content-header">
+            <h1>我的任务</h1>
+        </div>
+        <div id="breadcrumb">
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="widget-box">
+                        <div class="widget-title">
+                            <h5>
+                            </h5>
+                        </div>
+                        <div class="widget-content nopadding">
+                            <table id="content-table" class="table table-bordered data-table">
+                                <thead>
+                                    <tr>
+                                        <th width="150px">
+                                            任务名称
+                                        </th>
+                                        <th>
+                                            任务进度
+                                        </th>
+                                        <th width="150px">
+                                            分配日期
+                                        </th>
+                                        <th width="150px">
+                                            任务时限
+                                        </th>
+                                        <th width="150px">
+                                            是否完成
+                                        </th>
+                                        <th width="70px">
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                 @foreach (var obj in Model.TaskList)
+                                 {
+                                    <tr class="gradeC">
+                                        <td>
+                                           @obj.TODO_Tasks.TaskName 
+                                        </td>
+                                        <td>
+                                            <div class="progress progress-mini" style="width:150px">
+												<div style="width: @obj.CompletePercent%;" class="bar"></div>
+											</div>
+											<span class="percent">@obj.CompletePercent%</span>
+                                        </td>
+                                        <td>
+                                             @obj.TODO_Tasks.TaskAssignDate.Value.ToShortDateString()
+                                        </td>
+                                        <td>
+                                            @obj.TODO_Tasks.TaskDeadLine.Value.ToShortDateString()
+                                        </td>
+                                        <td class="center">
+                                        @if (obj.Status == 2)
+                                        { @Html.Raw("是");
+                                        }
+                                        else
+                                        { @Html.Raw("否");
+                                        }
+                                        </td>
+                                        <td class="center">
+                                        <a href="@Url.Action("Details", "MyTask", new { id = @obj.ID })">详细 </a> @if (obj.Status != 2){
+                                        @Html.Raw("|")<a onclick="return confirm('确认要完成吗！')" href="@Url.Action("Done", "MyTask", new { id = @obj.ID })">
+                                            完成</a>}
+                                        </td>
+                                    </tr>
+                                 }
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

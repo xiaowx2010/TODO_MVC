@@ -271,7 +271,7 @@ $.extend($.validator, {
 		url: "Please enter a valid URL.",
 		date: "请输入正确的日期.",
 		dateISO: "Please enter a valid date (ISO).",
-		number: "Please enter a valid number.",
+		number: "请输入正确的数字.",
 		digits: "Please enter only digits.",
 		creditcard: "Please enter a valid credit card number.",
 		equalTo: "Please enter the same value again.",
@@ -280,7 +280,7 @@ $.extend($.validator, {
 		minlength: $.validator.format("Please enter at least {0} characters."),
 		rangelength: $.validator.format("Please enter a value between {0} and {1} characters long."),
 		range: $.validator.format("Please enter a value between {0} and {1}."),
-		max: $.validator.format("Please enter a value less than or equal to {0}."),
+		max: $.validator.format("请输入一个小于{0}的数字."),
 		min: $.validator.format("Please enter a value greater than or equal to {0}.")
 	},
 

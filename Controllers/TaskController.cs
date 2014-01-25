@@ -8,21 +8,41 @@ using System.Transactions;
 namespace TODO.Controllers
 {
     using Custom;
+    using Models;
     using PersistObject.models;
     using DAO;
+    [AdminAuthorize]
     public class TaskController : BaseController
     {
         //
         // GET: /Task/
-        [CustomAuthorizeAttribute]
-        public ActionResult Index()
+        public ActionResult Index(string taskName, int statusList = -1)
         {
             ViewBag.ActiveType = "TaskControl";
+            List<SelectListItem> a = new List<SelectListItem>();
+            a.Add(new SelectListItem{Text="---请选择---", Value="-1", Selected=true});
+            a.Add(new SelectListItem{Text="未分配", Value="0"});
+            a.Add(new SelectListItem{Text="已分配", Value="1"});
+            a.Add(new SelectListItem{Text="已完成", Value="2"});
+
+            var StatusList = new SelectList(a, "Value", "Text", statusList);
+            ViewData["StatusList"] = StatusList;
+           
+            var model = new TaskListModel()
+            {
+                TaskName = taskName,
+                TaskStatus = statusList,
+                StatusList = a
+            };
             TaskDataContext db = new TaskDataContext();
 
             var tasklist = from t in db.TODO_Tasks where t.ParentTaskID==null select t;
-            
-            return View(tasklist.ToList<TODO_Tasks>());
+            if (!string.IsNullOrWhiteSpace(taskName))
+                tasklist = tasklist.Where(u => u.TaskName.Contains(model.TaskName));
+            if (statusList >= 0)
+                tasklist = tasklist.Where(u => u.TaskStatus == model.TaskStatus);
+            model.TaskList = tasklist.ToList<TODO_Tasks>();
+            return View(model);
         }
 
         //
@@ -61,6 +81,8 @@ namespace TODO.Controllers
                 newtask.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
                 newtask.TaskRemark = collection["TaskRemark"];
                 newtask.TaskStatus = Convert.ToInt32(collection["TaskStatus"]);
+                if (newtask.TaskStatus == 1)
+                    newtask.TaskAssignDate = DateTime.Now;
 
                 newtask.TaskCreator = "";
 
@@ -71,8 +93,10 @@ namespace TODO.Controllers
                     foreach (var user in executors)
                     {
                         TODO_Task_User task_user = new TODO_Task_User();
+                        task_user.ComplatedNode = "";
                         task_user.UserID = Convert.ToInt32(user);
-                        task_user.IsAssigned = newtask.TaskStatus==1;
+                        task_user.Status = newtask.TaskStatus;
+                        task_user.NodesCount = newtask.TODO_TaskNodes.Count;
                         newtask.TODO_Task_User.Add(task_user);
 
                     }
@@ -138,6 +162,8 @@ namespace TODO.Controllers
                 task.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
                 task.TaskRemark = collection["TaskRemark"];
                 task.TaskStatus = Convert.ToInt32(collection["TaskStatus"]);
+                if (!task.TaskAssignDate.HasValue && task.TaskStatus == 1)
+                    task.TaskAssignDate = DateTime.Now;
 
                 db.TODO_TaskNodes.DeleteAllOnSubmit(task.TODO_TaskNodes);
                 CreateNodes(task);
@@ -153,16 +179,18 @@ namespace TODO.Controllers
                         if (!previous_executor_ids.Contains(uid))
                         {
                             TODO_Task_User task_user = new TODO_Task_User();
+                            task_user.ComplatedNode = "";
                             task_user.UserID = uid;
+                            task_user.Status = task.TaskStatus;
+                            task_user.NodesCount = task.TODO_TaskNodes.Count;
                             task.TODO_Task_User.Add(task_user);
-                            task_user.IsAssigned = task.TaskStatus == 1;
                         }
                         else
                         {
                             var modified_user = task.TODO_Task_User.Single(u => u.UserID == uid);
                             if (modified_user != null)
                             {
-                                modified_user.IsAssigned = task.TaskStatus == 1;
+                                modified_user.Status = task.TaskStatus;
                             }
                         }
                     }
@@ -240,14 +268,34 @@ namespace TODO.Controllers
         public ActionResult Delay(FormCollection collection)
         {
 
-            // TODO: Add delete logic here
             var id = Convert.ToInt32(collection["DelayTask"]);
-            TaskDataContext db = new TaskDataContext();
-            var task = db.TODO_Tasks.SingleOrDefault<TODO_Tasks>(s => s.ID == id);
-            task.TaskDeadLine = Convert.ToDateTime(collection["DelayDate"]);
-            db.SubmitChanges();
-            return RedirectToAction("Index");
+            var delaydate = Convert.ToDateTime(collection["DelayDate"]);
+            try
+            {
+                TaskDataContext db = new TaskDataContext();
 
+                var task = db.TODO_Tasks.SingleOrDefault<TODO_Tasks>(s => s.ID == id);
+                DateTime pervDate = task.TaskDeadLine.Value;
+                task.TaskDeadLine = delaydate;
+
+                TODO_DelayLog log = new TODO_DelayLog();
+
+                log.DelayDate = delaydate;
+                log.PreviousDate = pervDate;
+                log.Reason = collection["Reason"];
+                log.TODO_Tasks = task;
+                log.Creator = (Session["TODOUser"] as TODO_Users).UserName;
+
+                task.TODO_DelayLog.Add(log);
+                db.SubmitChanges();
+
+
+            }
+            catch (Exception ex)
+            {
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
+            }
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

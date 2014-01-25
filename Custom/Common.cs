@@ -9,6 +9,7 @@ using System.IO;
 
 namespace TODO.Custom
 {
+    using PersistObject.models;
     /// <summary>
     /// 公用方法类
     /// </summary>
@@ -61,5 +62,11 @@ namespace TODO.Custom
         static FileStream logFS = null;
         static StreamWriter sw = null;
 
+    }
+
+    public class Task_Task_User
+    {
+        public int ID { get; set; }
+        public TODO_Tasks task { get; set; }
     }
 }

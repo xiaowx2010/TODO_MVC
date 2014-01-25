@@ -1,5 +1,5 @@
 ﻿@using TODO.PersistObject.models
-@model List<TODO_Tasks>
+@model TODO.Models.TaskListModel
 <link rel="stylesheet" href="@Url.Content("~/Content/css/index.css")" />
 <script type="text/javascript">
     $(document).ready(function () {
@@ -55,7 +55,7 @@
 		            ]
         });
 
-        $('select').select2();
+        $('select').not('#StatusList').select2();
         $("#delay").validate({
             rules: {
                 DelayDate: {
@@ -78,9 +78,19 @@
 <div id="content-header">
 				<h1>任务管理</h1>
 			</div>
-			<div id="breadcrumb">
-                <input type='button' value="新增任务" style="margin-right: 20px;" onclick="location.href='@Url.Action("Create", "Task")'" class='btn btn-primary subcat_hide' />
-			</div>
+			@using (Html.BeginForm("Index", "Task", FormMethod.Get)){
+            <div id="breadcrumb">
+                <div style="float:left; margin-left:10px; margin-top:10px">
+                <b>任务名称：</b>
+                @Html.TextBoxFor(o => o.TaskName)</div>
+                <div style="float:left; margin-left:10px; margin-top:10px"><b>任务状态：</b>
+                @*@Html.ListBoxFor(o => o.TaskStatus, Model.StatusList)*@
+                @Html.DropDownList("StatusList", null, new {style = "width:120px" })
+                <input type="submit" value="查询" class='btn btn-primary'/>
+                </div>
+                            <input type='button' value="新增任务" style="margin-right: 20px;" onclick="location.href='@Url.Action("Create", "Task")'" class='btn btn-primary subcat_hide' />
+			            </div>
+            }
 			<div class="container-fluid">
 				<div class="row-fluid">
 					<div class="span12">
@@ -120,7 +130,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach (var obj in Model)
+                                @foreach (var obj in Model.TaskList)
                                 {
                                     <tr class="gradeA">
                                         <td>
@@ -141,8 +151,10 @@
                                         <td class="center">
                                            @if (obj.TaskStatus == 0)
                                            {@Html.Raw("未分配")}
-                                           else
+                                           else if (obj.TaskStatus == 1)
                                            {@Html.Raw("已分配")}
+                                           else if (obj.TaskStatus == 2)
+                                           {@Html.Raw("已完成")}
                                         </td>
                                         <td class="center">
                                             <div class="btn-group">
@@ -157,7 +169,8 @@
 									        </div>
                                         </td>
                                         <td class="center">
-                                           <a href="#" onclick="addNewM(@obj.ID)">延期</a>|
+                                           @if (obj.TaskStatus != 0)
+                                           {<a href="#" onclick="addNewM(@obj.ID)">延期</a> @Html.Raw("|")}
                                            <a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a>|
                                            <a onclick="return confirm('确认要删除吗,子任务会一同删除！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">删除</a>
                                         </td>
@@ -168,8 +181,18 @@
                                                 <tr>
                                                     <td>@child.TaskName</td>
                                                     <td style="width: 17%">进度</td>
-                                                    <td>
-                                                        <a href="#" onclick="addNewM(@child.ID)">延期</a>|
+                                                   
+                                                    <td style="width: 17%">
+                                                    @if (child.TaskStatus == 0)
+                                                        {@Html.Raw("未分配")}
+                                                    else if (child.TaskStatus == 1)
+                                                        {@Html.Raw("已分配")}
+                                                    else if (child.TaskStatus == 2)
+                                                        {@Html.Raw("已完成")}
+                                                    </td> 
+                                                    <td>@if (child.TaskStatus != 0){
+                                       
+                                                        <a href="#" onclick="addNewM(@child.ID)">延期</a> @Html.Raw("|")}
                                                        <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>|
                                                        <a onclick="return confirm('确认要删除吗！')" href="@Url.Action("Delete", "Task", new { id = @child.ID })">删除</a>
                                                     </td>
@@ -188,13 +211,14 @@
 								<div class="modal-body">
 									<table cellpadding="0" cellspacing="0" class="addtable">
                                         <tr>
-                                            <td width="90">任务名：</td>
-                                            <td>(请勿重复)<input name="DelayTask" id="DelayTask" type="text" /></td>
-                                        </tr>
-            
-                                        <tr>
                                             <td>延期时间：</td>
                                             <td><input name="DelayDate" id="DelayDate" type="text"  class="datepicker" /></td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td width="90">延期理由：</td>
+                                            <td><textarea name="Reason"></textarea>
+                                            <input name="DelayTask" id="DelayTask" type="hidden" /></td>
                                         </tr>
 								        <tr>
                                             <td colspan="2" style="text-align: left;padding-left:80px;">

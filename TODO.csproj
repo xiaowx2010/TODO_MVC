@@ -67,7 +67,9 @@
     <Content Include="Content\css\index.css" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MyTaskController.cs" />
     <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Controllers\TaskMarkingController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Custom\BaseController.cs" />
     <Compile Include="Custom\Common.cs" />
@@ -282,13 +284,16 @@
     <Content Include="Views\Shared\副本 _Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Home\MyTask.cshtml" />
+    <Content Include="Views\MyTask\Details.cshtml" />
+    <None Include="Views\MyTask\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\User\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Account\副本 LogOn.cshtml" />
+    <Content Include="Views\TaskMarking\Index.cshtml" />
+    <Content Include="Views\TaskMarking\Mark.cshtml" />
     <None Include="Views\Task\Index.cshtml" />
     <Content Include="Views\Task\Create.cshtml" />
     <Content Include="Views\Task\Edit.cshtml" />
