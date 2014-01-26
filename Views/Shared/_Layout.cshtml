@@ -30,7 +30,7 @@
         <ul class="nav btn-group">
             <li class="btn btn-inverse"><a href="#">
            <span class="text">欢迎回来，@(((TODO_Users)Session["TODOUser"]).PersonName)</span></a></li>
-            <li class="btn btn-inverse dropdown" id="menu-messages">
+            @*<li class="btn btn-inverse dropdown" id="menu-messages">
                 
                <a href="#" data-toggle="dropdown"
                 data-target="#menu-messages" class="dropdown-toggle"><i class="icon icon-envelope">
@@ -42,7 +42,7 @@
                     <li><a class="sOutbox" title="" href="#">outbox</a></li>
                     <li><a class="sTrash" title="" href="#">trash</a></li>
                 </ul>
-            </li>
+            </li>*@
             <li class="btn btn-inverse"><a title="" href="/Account/LogOn"><i class="icon icon-share-alt">
             </i><span class="text">登出 </span></a></li>
         </ul>
@@ -50,7 +50,7 @@
 	<div id="sidebar">
 		<a href="#" class="visible-phone"><i class="icon icon-th-list"></i> Tables</a>
 		<ul>
-			<li @if (ViewBag.ActiveType == "Home"){@Html.Raw("class=\"active\"")}><a href="/Home"><i class="icon icon-home"></i> <span>我的桌面</span></a></li>
+			@*<li @if (ViewBag.ActiveType == "Home"){@Html.Raw("class=\"active\"")}><a href="/Home"><i class="icon icon-home"></i> <span>我的桌面</span></a></li>*@
 			<li @if(ViewBag.ActiveType == "MyTask"){@Html.Raw("class=\"active\"")}><a href="/MyTask"><i class="icon icon-th-list"></i> <span>我的任务</span></a></li>
 			@if (Session["UserRole"] == "Admin")
    {
@@ -59,7 +59,7 @@
 			<li @if (ViewBag.ActiveType == "TaskControl")
        {@Html.Raw("class=\"active\"")}><a href="/Task"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
        <li @if (ViewBag.ActiveType == "TaskMarking")
-           {@Html.Raw("class=\"active\"")}><a href="/TaskMarking"><i class="icon icon-inbox"></i> <span>任务评分</span></a></li>
+           {@Html.Raw("class=\"active\"")}><a href="/TaskMarking"><i class="icon icon-bookmark"></i> <span>任务评分</span></a></li>
    }
 		</ul>
 	</div>

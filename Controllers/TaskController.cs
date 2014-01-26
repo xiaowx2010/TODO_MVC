@@ -78,7 +78,8 @@ namespace TODO.Controllers
                 newtask.TaskName = collection["TaskName"];
                 newtask.Priority = Convert.ToInt32(collection["Priority"]);
                 newtask.TaskType = collection["TaskType"];
-                newtask.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
+                if (!string.IsNullOrWhiteSpace(collection["TaskDeadLine"]))
+                    newtask.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
                 newtask.TaskRemark = collection["TaskRemark"];
                 newtask.TaskStatus = Convert.ToInt32(collection["TaskStatus"]);
                 if (newtask.TaskStatus == 1)
@@ -166,6 +167,7 @@ namespace TODO.Controllers
                     task.TaskAssignDate = DateTime.Now;
 
                 db.TODO_TaskNodes.DeleteAllOnSubmit(task.TODO_TaskNodes);
+                task.TODO_TaskNodes.Clear();
                 CreateNodes(task);
                 
                 var now_executors = Request.Form.GetValues("TaskExecutor");
@@ -191,6 +193,7 @@ namespace TODO.Controllers
                             if (modified_user != null)
                             {
                                 modified_user.Status = task.TaskStatus;
+                                modified_user.NodesCount = task.TODO_TaskNodes.Count;
                             }
                         }
                     }

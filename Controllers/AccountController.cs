@@ -44,9 +44,11 @@ namespace TODO.Controllers
                     {
                         return Redirect(returnUrl);
                     }
+                    else if(user.UserRole == 1)
+                        return RedirectToAction("Index", "Task");
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "MyTask");
                     }
                 }
                 else
@@ -66,7 +68,7 @@ namespace TODO.Controllers
         {
             FormsAuthentication.SignOut();
             Session.Clear();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "MyTask");
         }
 
        

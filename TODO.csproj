@@ -161,6 +161,7 @@
     <Content Include="Content\img\icons\32\user.png" />
     <Content Include="Content\img\icons\32\wallet.png" />
     <Content Include="Content\img\icons\32\web.png" />
+    <Content Include="Content\img\intro_logo.png" />
     <Content Include="Content\img\larrow.png" />
     <Content Include="Content\img\line.png" />
     <Content Include="Content\img\logo.png" />
@@ -285,7 +286,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MyTask\Details.cshtml" />
-    <None Include="Views\MyTask\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\User\Index.cshtml" />
@@ -294,7 +294,9 @@
     <Content Include="Views\Account\副本 LogOn.cshtml" />
     <Content Include="Views\TaskMarking\Index.cshtml" />
     <Content Include="Views\TaskMarking\Mark.cshtml" />
-    <None Include="Views\Task\Index.cshtml" />
+    <Content Include="Views\MyTask\Index.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Views\Task\Create.cshtml" />
     <Content Include="Views\Task\Edit.cshtml" />
     <Content Include="Views\User\Create.cshtml" />
@@ -309,6 +311,11 @@
       <Project>{B273D99C-9863-4141-8397-001BDBAC56D9}</Project>
       <Name>TODO.PersistObject</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Task\Index.cshtml">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

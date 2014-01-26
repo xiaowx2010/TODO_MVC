@@ -143,10 +143,11 @@
                                             @obj.TaskType
                                         </td>
                                         <td>
-                                            %50
+                                            @obj.ComplatePercent%
                                         </td>
                                         <td>
-                                            @obj.TaskDeadLine.Value.ToShortDateString()
+                                            @if (obj.TaskDeadLine.HasValue)
+                                            {@obj.TaskDeadLine.Value.ToShortDateString()}
                                         </td>
                                         <td class="center">
                                            @if (obj.TaskStatus == 0)
@@ -157,6 +158,7 @@
                                            {@Html.Raw("已完成")}
                                         </td>
                                         <td class="center">
+                                         @if (obj.TaskStatus == 0){
                                             <div class="btn-group">
                                                 <button onclick="create_children(@obj.ID, 1)" class="btn btn-small">生成子任务</button>
                                                 <button data-toggle="dropdown" class="btn btn-small dropdown-toggle"><span class="caret"></span></button>
@@ -167,6 +169,7 @@
                                                     <li><a href="#" onclick="create_children(@obj.ID, 5)">生成5个子任务</a></li>
                                                 </ul>
 									        </div>
+                                             }
                                         </td>
                                         <td class="center">
                                            @if (obj.TaskStatus != 0)
@@ -180,7 +183,7 @@
                                             {
                                                 <tr>
                                                     <td>@child.TaskName</td>
-                                                    <td style="width: 17%">进度</td>
+                                                    <td style="width: 17%">@child.ComplatePercent%</td>
                                                    
                                                     <td style="width: 17%">
                                                     @if (child.TaskStatus == 0)

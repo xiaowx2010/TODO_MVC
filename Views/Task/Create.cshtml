@@ -112,8 +112,10 @@
             alert("要求完成时间！");
             return ;
         }
-        $("#TaskStatus").val("1");
-        $("#create").submit();
+        if(confirm("确认分配吗，提交后将不能新增子任务和修改")){
+            $("#TaskStatus").val("1");
+            $("#create").submit();
+        }
     }
     function CreateTaskNode(btn){
          if ($(btn).hasClass('btn-success')) {

@@ -54,7 +54,7 @@
 						<div class="control-group">
 							<label class="control-label">要求完成时间:</label>
 							<div class="controls">
-								<input name="TaskDeadLine" type="text" data-date="" data-date-format="yyyy/mm/dd"  value="@Model.TaskDeadLine.Value.ToShortDateString()" class="datepicker" />
+								<input name="TaskDeadLine" type="text" data-date="" data-date-format="yyyy/mm/dd"  value="@Model.TaskDeadLine" class="datepicker" />
 							</div>
 						</div>
 						<div class="control-group">
@@ -86,11 +86,14 @@
                                 <input type="button" class="btn btn-success" value="新增任务节点" onclick="CreateTaskNode(this)" />
 							</div>
 						</div>
+         if(@Model.TaskStatus == 0)
+         {
 						<div class="form-actions">
 							<input type="submit" class="btn btn-primary" value="保存" />
                             <input type="button" onclick="SaveAndAssign()" style="margin-left:20px" class="btn btn-warning" value="保存并分配" />
                             <input type="hidden" name="TaskStatus" id="TaskStatus" value="@Model.TaskStatus" />
 						</div>
+         }
      }
 				</div>
 			</div>						
@@ -107,8 +110,10 @@
             alert("请选择处理人！");
             return ;
         }
-        $("#TaskStatus").val("1");
-        $("#create").submit();
+        if(confirm("确认分配吗，提交后将不能新增子任务和修改")){
+            $("#TaskStatus").val("1");
+            $("#create").submit();
+        }
     }
     function CreateTaskNode(btn){
          if ($(btn).hasClass('btn-success')) {
