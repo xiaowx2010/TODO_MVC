@@ -25,13 +25,13 @@ a:hover {
 
 #header h1 {
     background: url("../img/intro_logo.png") no-repeat scroll 0 0 transparent;
-    height: 31px;
+    height: 60px;
     left: 15px;
     line-height: 600px;
     overflow: hidden;
     position: relative;
     top: 5px;
-    width: 191px;
+    width: 333px;
 }
 
 #header h1 a {
@@ -203,6 +203,7 @@ a:hover {
     position: relative;
     min-height: 500px;
     width: auto;
+	margin-top:28px;
 
     border-top-left-radius: 8px;
 }
@@ -259,6 +260,8 @@ a:hover {
 	border-top: 1px solid #d6d6d6;
 	border-bottom: 1px solid #d6d6d6;
 	padding-left: 10px;
+	float:left;
+	width:100%;
 }
 #breadcrumb input{
 	float: right;

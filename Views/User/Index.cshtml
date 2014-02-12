@@ -7,14 +7,14 @@
 @using (Html.BeginForm("Index", "User", FormMethod.Get)){
 <div id="breadcrumb">
     <div style="float:left; margin-left:10px; margin-top:10px">
-    <b>姓名：</b>
-    @Html.TextBoxFor(o => o.PersonName)</div>
+    <b style="float:left; margin-top:5px;">姓名：</b>
+    @Html.TextBoxFor(o => o.PersonName, new {style = "float:left;"})</div>
     @*<input name="PersonName" type="text" />*@
-    <div style="float:left; margin-left:10px; margin-top:10px"><b>是否启用：</b>
-    @Html.CheckBoxFor(o => o.IsAvailable)
-    <input type="submit" value="查询" class='btn btn-primary'/>
+    <div style="float:left; margin-left:10px; margin-top:10px"><b style="float:left; margin-top:5px;">是否启用：</b>
+    <div style="float:left; height:30px;">@Html.CheckBoxFor(o => o.IsAvailable)</div>
+    <input type="submit" value="查询" class='btn btn-primary' style="float:left; margin-left:10px;"/>
     </div>
-    <input type='button' value="新增用户" style="margin-right: 20px;" onclick="location.href='@Url.Action("Create", "User")'"
+    <input type='button' value="新增用户" style="margin-right: 20px; margin-top:10px;" onclick="location.href='@Url.Action("Create", "User")'"
         class='btn btn-primary subcat_hide' />
 </div>
 }
