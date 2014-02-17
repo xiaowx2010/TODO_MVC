@@ -1,0 +1,165 @@
+﻿@using TODO.PersistObject.models
+@model TODO_Tasks
+<div id="content-header">
+	<h1>任务管理</h1>
+</div>
+<div id="breadcrumb">
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon">
+						<i class="icon-align-justify"></i>									
+					</span>
+					<h5>任务详情</h5>
+				</div>
+				<div class="form-horizontal widget-content nopadding">
+                <div class="row-fluid">
+					<div class="control-group span4">
+							<label class="control-label">任务名:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskName</label>*@
+								<input disabled name="TaskName" value="@Model.TaskName" type="text" />
+							</div>
+						</div>
+						<div class="control-group span4">
+							<label class="control-label">截止日期:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskDeadLine.Value.ToShortDateString()</label>*@
+								<input disabled name="TaskDeadLine" type="text"  value="@Model.TaskDeadLine.Value.ToShortDateString()" />
+							</div>
+						</div>
+						<div class="control-group  span4">
+							<label class="control-label">任务状态:</label>
+							<div class="controls">
+                            <input disabled name="TaskStatus" type="text"  value="
+                            @if (Model.TaskStatus == 0)
+                            {@Html.Raw("未分配")}
+                            else if (Model.TaskStatus == 1)
+                            {@Html.Raw("已分配")}
+                            else if (Model.TaskStatus == 2)
+                            {@Html.Raw("已完成")}
+                            else if (Model.TaskStatus == -1)
+                            {@Html.Raw("已废止")}" />
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">任务简述:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskRemark</label>*@
+								<textarea disabled name="TaskRemark">@Model.TaskRemark</textarea>
+							</div>
+						</div>
+                         </div>
+    
+				</div>
+			</div>						
+		</div>
+	</div>
+    @if (Model.Child_Tasks.Count > 0)
+    {
+    <div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon">
+						<i class="icon-align-justify"></i>									
+					</span>
+					<h5>任务详情</h5>
+				</div>
+				<div class="form-horizontal widget-content nopadding">
+                <div class="row-fluid">
+					<div class="control-group span4">
+							<label class="control-label">任务名:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskName</label>*@
+								<input disabled name="TaskName" value="@Model.TaskName" type="text" />
+							</div>
+						</div>
+						<div class="control-group span4">
+							<label class="control-label">截止日期:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskDeadLine.Value.ToShortDateString()</label>*@
+								<input disabled name="TaskDeadLine" type="text"  value="@Model.TaskDeadLine.Value.ToShortDateString()" />
+							</div>
+						</div>
+						<div class="control-group  span4">
+							<label class="control-label">任务状态:</label>
+							<div class="controls">
+                            <input disabled name="TaskStatus" type="text"  value="
+                            @if (Model.TaskStatus == 0)
+                            {@Html.Raw("未分配")}
+                            else if (Model.TaskStatus == 1)
+                            {@Html.Raw("已分配")}
+                            else if (Model.TaskStatus == 2)
+                            {@Html.Raw("已完成")}
+                            else if (Model.TaskStatus == -1)
+                            {@Html.Raw("已废止")}" />
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">任务简述:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskRemark</label>*@
+								<textarea disabled name="TaskRemark">@Model.TaskRemark</textarea>
+							</div>
+						</div>
+                         </div>
+    
+				</div>
+			</div>						
+		</div>
+	</div>
+    }
+    else
+    {
+        <div class="row-fluid">
+		<div class="span12">
+			<div class="widget-box">
+				<div class="widget-title">
+					<span class="icon">
+						<i class="icon-align-justify"></i>									
+					</span>
+					<h5>任务进展</h5>
+				</div>
+                @foreach (var task_user in Model.TODO_Task_User)
+                        {
+				<div class="form-horizontal widget-content nopadding">
+                <div class="row-fluid">
+					<div class="control-group">
+							<label class="control-label">@task_user.TODO_Users.PersonName:</label>
+							<div class="controls">
+                            @foreach(var node in Model.TODO_TaskNodes){
+							<div style="margin-bottom:5px">	节点：<input disabled name="TaskName" value="@node.NodeName" type="text" /> 
+                            @if (task_user.SelectNodes() != null && task_user.SelectNodes().Contains(node.NodeNum.ToString()))
+                            {@Html.Raw("已完成")} </div>
+                            }
+							</div>
+						</div>
+						
+						<div class="control-group">
+							<label class="control-label">任务完成简述:</label>
+							<div class="controls">
+                            @*<label class="control-label">@Model.TODO_Tasks.TaskRemark</label>*@
+								<textarea disabled name="TaskRemark">@task_user.ComplatedComments</textarea>
+							</div>
+						</div>
+                         </div>
+    
+				</div>
+                        }
+			</div>						
+		</div>
+	</div>
+    }
+</div>
+<script type="text/javascript">
+     $(document).ready(function () {
+        $("#TaskType").val("@Model.TaskType");
+        $("#Priority").val("@Model.Priority");
+       
+        $('input[type=checkbox]').uniform();
+    });
+</script>

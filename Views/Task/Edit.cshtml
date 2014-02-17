@@ -63,13 +63,19 @@
 								<textarea name="TaskRemark">@Model.TaskRemark</textarea>
 							</div>
 						</div>
+                                          <div>
+                                  <label><input id="cbx_showdetail" type="checkbox" checked onclick="toggleDetail()" />没有子任务, 直接分配
+  </label>
+                        </div>
+        
+                       <div id="detail_div">
 						<div class="control-group">
 							<label class="control-label">负责人:</label>
 							<div class="controls">
                             @Html.ListBox("TaskExecutor", null, new { @class = "multiple__select", style = "width:80%", multiple = "" })
 							</div>
 						</div>
-                        foreach (var node in ViewData["nodelist"] as List<TODO_TaskNodes>)
+                        @foreach (var node in ViewData["nodelist"] as List<TODO_TaskNodes>)
                         {
                         <div class="control-group">
                             <label class="control-label">任务节点:</label>
@@ -86,10 +92,11 @@
                                 <input type="button" class="btn btn-success" value="新增任务节点" onclick="CreateTaskNode(this)" />
 							</div>
 						</div>
+                         </div>
          if(@Model.TaskStatus == 0)
          {
 						<div class="form-actions">
-							<input type="submit" class="btn btn-primary" value="保存" />
+							<input type="button" onclick="Save()"  class="btn btn-primary" value="保存" />
                             <input type="button" onclick="SaveAndAssign()" style="margin-left:20px" class="btn btn-warning" value="保存并分配" />
                             <input type="hidden" name="TaskStatus" id="TaskStatus" value="@Model.TaskStatus" />
 						</div>
@@ -104,6 +111,22 @@
 <script type="text/javascript" src="@Url.Content("~/Content/js/bootstrap-datepicker.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Content/js/jquery.validate.js")"></script>
 <script type="text/javascript">
+function toggleDetail()
+{
+    $("#detail_div").toggle();
+    $("#approve_ipt").toggle();
+}
+function Save()
+{
+    if($("#cbx_showdetail").attr("checked")!="checked"){
+            $("#TaskExecutor").val("");    
+            $('textarea[name="NodeRemark"]').each(function(i){
+                    $( this ).val("");
+                });
+    }
+
+    $("#create").submit();
+}
     function SaveAndAssign(){
         if($("#TaskExecutor").val() == null)
         {

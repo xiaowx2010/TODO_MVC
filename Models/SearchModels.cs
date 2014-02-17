@@ -34,11 +34,13 @@ namespace TODO.Models
         /// <summary>
         /// 查询条件：是否完成
         /// </summary>
-        public bool IsDone { get; set; }
+        public int Status { get; set; }
         /// <summary>
         /// 绑定列表的员工集合
         /// </summary>
         public List<TODO_Task_User> TaskList { get; set; }
+        public IEnumerable<SelectListItem> StatusList { get; set; }
+        public int UserId { get; set; }
        
     }
     public class TaskListModel

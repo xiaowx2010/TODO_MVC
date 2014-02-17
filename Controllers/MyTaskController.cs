@@ -15,22 +15,32 @@ namespace TODO.Controllers
         //
         // GET: /MyTask/
 
-        public ActionResult Index(string taskName, bool? isDone = null)
+        public ActionResult Index(string taskName, int statusList = 1)
         {
             ViewBag.ActiveType = "MyTask";
+            List<SelectListItem> a = new List<SelectListItem>();
+            a.Add(new SelectListItem { Text = "---请选择---", Value = "-2", Selected = true });
+            a.Add(new SelectListItem { Text = "未完成", Value = "1" });
+            a.Add(new SelectListItem { Text = "已完成", Value = "2" });
+            a.Add(new SelectListItem { Text = "已废止", Value = "-1" });
+
+            var StatusList = new SelectList(a, "Value", "Text", statusList);
+            ViewData["StatusList"] = StatusList;
             var model = new  MyTaskListModel()
             {
-                IsDone = isDone.HasValue ? isDone.Value : false,
-                TaskName = taskName
+                Status = statusList,
+                TaskName = taskName,
+                StatusList = a
             };
             TODO_Users user= Session["TODOUser"] as TODO_Users;
             TaskDataContext db = new TaskDataContext();
-            var task_list = from u in db.TODO_Task_User where u.TODO_Users == user &&  u.Status>=1 select u;
+            var task_list = from u in db.TODO_Task_User select u;
             if (!string.IsNullOrEmpty(taskName))
                 task_list = task_list.Where(u => u.TODO_Tasks.TaskName.Contains(model.TaskName));
-            if (isDone.HasValue && isDone.Value)
-                task_list = task_list.Where(u => u.Status == 2);
+            if (statusList >= -1)
+                task_list = task_list.Where(u => u.Status == statusList);
             model.TaskList = task_list.ToList();
+            model.UserId = user.ID;
             return View(model);
         }
 
