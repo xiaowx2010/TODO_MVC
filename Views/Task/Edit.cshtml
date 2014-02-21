@@ -64,7 +64,18 @@
 							</div>
 						</div>
                                           <div>
-                                  <label><input id="cbx_showdetail" type="checkbox" checked onclick="toggleDetail()" />没有子任务, 直接分配
+                                  <label><input id="cbx_showdetail" type="checkbox"                                   
+                                  @if (Model.TODO_Task_User.Count > 0 || Model.Parent_Task != null)
+                                  { 
+                                      @Html.Raw("checked disabled"); 
+                                  }
+                                  else if(Model.Child_Tasks.Count>0){
+                                      @Html.Raw("disabled");
+                                  }
+                                  else{
+                                      @Html.Raw("checked");
+                                  }
+                                  onclick="toggleDetail()" />没有子任务, 直接分配
   </label>
                         </div>
         
@@ -93,14 +104,14 @@
 							</div>
 						</div>
                          </div>
-         if(@Model.TaskStatus == 0)
-         {
+                        if (@Model.TaskStatus == 0)
+                        {
 						<div class="form-actions">
 							<input type="button" onclick="Save()"  class="btn btn-primary" value="保存" />
-                            <input type="button" onclick="SaveAndAssign()" style="margin-left:20px" class="btn btn-warning" value="保存并分配" />
+                            <input type="button" id="approve_ipt" onclick="SaveAndAssign()" style="margin-left:20px" class="btn btn-warning" value="保存并分配" />
                             <input type="hidden" name="TaskStatus" id="TaskStatus" value="@Model.TaskStatus" />
 						</div>
-         }
+                        }
      }
 				</div>
 			</div>						
@@ -181,5 +192,15 @@ function Save()
         $('input[type=checkbox]').uniform();
         $('.datepicker').datepicker();
         $('.multiple__select').select2();
+
+        if($("#cbx_showdetail").attr("checked")=="checked"){
+            $("#detail_div").show();
+            $("#approve_ipt").show();
+        }
+        else{
+            $("#detail_div").hide();
+            $("#approve_ipt").hide();
+        }
+
     });
 </script>

@@ -135,7 +135,7 @@
                                 <tbody>
                                 @foreach (var obj in Model.TaskList)
                                 {
-                                    <tr class="gradeA">
+                                    <tr class="gradeA @obj.InfoStr()">
                                         <td>
                                             @obj.Priority
                                         </td>
@@ -197,11 +197,13 @@
                                             <table class="subTable" border="0" cellpadding="0" cellspacing="0">
                                             @foreach (var child in obj.Child_Tasks.ToList())
                                             {
-                                                <tr>
+                                                <tr class="@child.InfoStr()">
                                                     <td>@child.TaskName</td>
                                                     <td style="width: 17%">@child.ResponsibleStr()</td>
+                                                    <td style="width: 17%">@if (child.TaskDeadLine.HasValue)
+                                                                           {@child.TaskDeadLine.Value.ToShortDateString()}</td>
                                                    
-                                                    <td style="width: 17%">
+                                                    <td style="width: 14%">
                                                     @if (child.TaskStatus == 0)
                                                     {@Html.Raw("未分配")}
                                                     else if (child.TaskStatus == 1)
