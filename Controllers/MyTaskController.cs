@@ -109,6 +109,11 @@ namespace TODO.Controllers
                     var task_user = db.TODO_Task_User.SingleOrDefault<TODO_Task_User>(s => s.ID == id);
                     task_user.Status = 2;
                     task_user.CompleteDate = DateTime.Now;
+                    if (task_user.TODO_Tasks.TODO_TaskNodes.Count > 0)
+                    {
+                        var nodes = from node in task_user.TODO_Tasks.TODO_TaskNodes select node.NodeNum.ToString();
+                        task_user.ComplatedNode = task_user.ComplatedNode = string.Join("^", nodes);
+                    }
                     var same_task = from t in task_user.TODO_Tasks.TODO_Task_User where t.Status != 2 select t;
                     if (same_task.Count()==0)
                         task_user.TODO_Tasks.TaskStatus = 2;
