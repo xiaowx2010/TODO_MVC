@@ -188,10 +188,12 @@
                                          }
                                         </td>
                                         <td class="center">
-                                           @if (obj.TaskStatus != 0)
+                                        @if(obj.TaskStatus != -1){
+                                           if (obj.TaskStatus != 0)
                                            {<a href="#" onclick="addNewM(@obj.ID)">延期</a> @Html.Raw("|")}
-                                           <a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a>|
+                                           <a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a> @Html.Raw("|")
                                            <a onclick="return confirm('确认要废止吗,子任务会一同废止！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">废止</a>
+                                        }
                                         </td>
                                         <td id="@obj.ID" class="hide_css">
                                             <table class="subTable" border="0" cellpadding="0" cellspacing="0">
@@ -213,12 +215,15 @@
                                                     else if (obj.TaskStatus == -1)
                                                     {@Html.Raw("已废止")}
                                                     </td> 
-                                                    <td>@if (child.TaskStatus != 0)
+                                                    <td>
+                                                    @if(obj.TaskStatus != -1){
+                                                        if (child.TaskStatus != 0)
                                                         {
                                        
                                                         <a href="#" onclick="addNewM(@child.ID)">延期</a> @Html.Raw("|")}
-                                                       <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>|
+                                                       <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>@Html.Raw("|")
                                                        <a onclick="return confirm('确认要废止吗！')" href="@Url.Action("Delete", "Task", new { id = @child.ID })">废止</a>
+                                                    }
                                                     </td>
                                                 </tr>
                                             }
