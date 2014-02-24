@@ -117,8 +117,8 @@
                                         <th width="80px">
                                             截止日期
                                         </th>
-                                        <th width="60px">
-                                            延期数
+                                        <th width="80px">
+                                            有无延期
                                         </th>
                                         <th width="80px">
                                             任务状态
@@ -161,7 +161,7 @@
                                             @if (obj.TaskDeadLine.HasValue)
                                             {@obj.TaskDeadLine.Value.ToShortDateString()}
                                         </td>
-                                        <td>@obj.TODO_DelayLog.Count</td>
+                                        <td>@obj.DelayStr()</td>
                                         <td class="center">
                                         @obj.StatusStr()
                                           @* @if (obj.TaskStatus == 0)

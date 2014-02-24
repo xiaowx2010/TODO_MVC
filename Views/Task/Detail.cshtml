@@ -72,6 +72,10 @@
 					</span>
 					<h5>子任务：@child.TaskName</h5>
                     <h5>截止日期：@if(@child.TaskDeadLine.HasValue){@child.TaskDeadLine.Value.ToShortDateString()}</h5>
+                    @if (child.TODO_DelayLog.Count > 0)
+                    {
+                        <h5>延期数：@child.TODO_DelayLog.Count</h5>
+                    }
 				</div>
                 </a>
                      <div class="collapse" id="@child.ID">
@@ -118,6 +122,10 @@
 						<i class="icon-align-justify"></i>									
 					</span>
 					<h5>任务进展</h5>
+                    @if (Model.TODO_DelayLog.Count > 0)
+                    {
+                        <h5>延期数：@Model.TODO_DelayLog.Count</h5>
+                    }
 				</div>
                 @foreach (var task_user in Model.TODO_Task_User)
                 {
