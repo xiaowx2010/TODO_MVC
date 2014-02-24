@@ -163,14 +163,15 @@
                                         </td>
                                         <td>@obj.TODO_DelayLog.Count</td>
                                         <td class="center">
-                                           @if (obj.TaskStatus == 0)
+                                        @obj.StatusStr()
+                                          @* @if (obj.TaskStatus == 0)
                                            {@Html.Raw("未分配")}
                                            else if (obj.TaskStatus == 1)
                                            {@Html.Raw("已分配")}
                                            else if (obj.TaskStatus == 2)
                                            {@Html.Raw("已完成")}
                                            else if (obj.TaskStatus == -1)
-                                           {@Html.Raw("已废止")}
+                                           {@Html.Raw("已废止")}*@
                                         </td>
                                         <td class="center">
                                          @if (obj.TaskStatus == 0 && obj.TODO_Task_User.Count == 0 && obj.TODO_TaskNodes.Count == 0)
