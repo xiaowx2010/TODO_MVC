@@ -68,11 +68,16 @@
                                   @if (Model.TODO_Task_User.Count > 0 || Model.Parent_Task != null)
                                   { 
                                       @Html.Raw("checked disabled"); 
+                                      @Html.Raw("checked ");
+                                      if(Model.Parent_Task != null){
+                                       @Html.Raw("disabled ");}
                                   }
-                                  else if(Model.Child_Tasks.Count>0){
+                                  else if (Model.Child_Tasks.Count > 0)
+                                  {
                                       @Html.Raw("disabled");
                                   }
-                                  else{
+                                  else
+                                  {
                                       @Html.Raw("checked");
                                   }
                                   onclick="toggleDetail()" />没有子任务, 直接分配

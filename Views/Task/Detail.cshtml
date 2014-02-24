@@ -74,15 +74,15 @@
                     <h5>截止日期：@if(@child.TaskDeadLine.HasValue){@child.TaskDeadLine.Value.ToShortDateString()}</h5>
 				</div>
                 </a>
+                     <div class="collapse" id="@child.ID">
                 @foreach (var task_user in child.TODO_Task_User)
                 {
-                     <div class="collapse" id="@child.ID">
 				<div class="form-horizontal widget-content nopadding">
                 <div class="row-fluid">
 					<div class="control-group">
 							<label class="control-label">@task_user.TODO_Users.PersonName:</label>
 							<div class="controls">
-                            @foreach (var node in Model.TODO_TaskNodes)
+                            @foreach (var node in child.TODO_TaskNodes)
                             {
 							<div style="margin-bottom:5px">	节点：<input disabled name="TaskName" value="@node.NodeName" type="text" /> 
                             @if (task_user.SelectNodes() != null && task_user.SelectNodes().Contains(node.NodeNum.ToString()))
@@ -101,8 +101,8 @@
                          </div>
     
 				</div>
-                </div>
-                }
+                
+                }</div>
 			</div>						
 		</div>
 	</div>
