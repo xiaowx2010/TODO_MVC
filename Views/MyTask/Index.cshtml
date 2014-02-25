@@ -1,4 +1,5 @@
-﻿@model TODO.Models.MyTaskListModel
+﻿@using TODO.PersistObject.models
+@model TODO.Models.MyTaskListModel
 <link rel="stylesheet" href="@Url.Content("~/Content/css/index.css")" />
     <script type="text/javascript">
         $(document).ready(function () {
@@ -96,7 +97,7 @@
                                 <tbody>
                                  @foreach (var obj in Model.TaskList)
                                  {
-                                    <tr class="gradeC">
+                                    <tr class="gradeC @obj.TODO_Tasks.InfoStr()">
                                     <td>
                                            @obj.TODO_Tasks.Priority 
                                         </td>
