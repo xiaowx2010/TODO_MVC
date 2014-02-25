@@ -3,7 +3,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#content-table').dataTable({
-                "aaSorting": [[2, "asc"]],
+                "aaSorting": [[0, "desc"]],
                 "bJQueryUI": true,
                 "sPaginationType": "full_numbers",
                 "sDom": '<""l>t<"F"fp>',
@@ -25,7 +25,7 @@
                     }
                 },
                 "aoColumns": [
-			null, null, null, null, null,
+			null, null, null, null, null, null,
 			{ "asSorting": [] }
 		]
 
@@ -67,6 +67,9 @@
                             <table id="content-table" class="table table-bordered data-table">
                                 <thead>
                                     <tr>
+                                        <th width="80px">
+                                            优先级
+                                        </th>
                                         <th>
                                             任务名称
                                         </th>
@@ -91,6 +94,9 @@
                                  @foreach (var obj in Model.TaskList)
                                  {
                                     <tr class="gradeC">
+                                    <td>
+                                           @obj.TODO_Tasks.Priority 
+                                        </td>
                                         <td>
                                            @obj.TODO_Tasks.TaskName 
                                         </td>

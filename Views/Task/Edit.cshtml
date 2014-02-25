@@ -109,7 +109,7 @@
 							</div>
 						</div>
                          </div>
-                        if (@Model.TaskStatus == 0)
+         if (@Model.TaskStatus == 0&&@Model.Child_Tasks.Count == 0)
                         {
 						<div class="form-actions">
 							<input type="button" onclick="Save()"  class="btn btn-primary" value="保存" />
