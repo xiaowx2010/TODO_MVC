@@ -87,6 +87,10 @@ namespace TODO.Controllers
 
                 }
                 db.SubmitChanges();
+                if (task_user.SelectNodes() != null && task_user.SelectNodes().Count == task_user.TODO_Tasks.TODO_TaskNodes.Count)
+                {
+                    return Done(id);
+                }
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
