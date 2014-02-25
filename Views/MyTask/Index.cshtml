@@ -25,7 +25,7 @@
                     }
                 },
                 "aoColumns": [
-			null, null, null, null, null, null,
+			null, null, null, null, null, null, null,
 			{ "asSorting": [] }
 		]
 
@@ -73,6 +73,9 @@
                                         <th>
                                             任务名称
                                         </th>
+                                        <th>
+                                            子任务名称
+                                        </th>
                                         <th width="100px">
                                             责任人
                                         </th>
@@ -98,7 +101,21 @@
                                            @obj.TODO_Tasks.Priority 
                                         </td>
                                         <td>
+                                        @if (obj.TODO_Tasks.Parent_Task == null)
+                                        {
                                            @obj.TODO_Tasks.TaskName 
+                                        }
+                                        else
+                                        {
+                                            @obj.TODO_Tasks.Parent_Task.TaskName 
+                                        }
+                                        </td>
+                                        <td>
+                                        @if (obj.TODO_Tasks.Parent_Task != null)
+                                        {
+                                           @obj.TODO_Tasks.TaskName 
+                                        }
+                                           
                                         </td>
                                         <td>
                                             @obj.TODO_Users.PersonName
@@ -128,7 +145,7 @@
                                             {
                                             @Html.Raw("|")<a onclick="return confirm('确认要完成吗！')" href="@Url.Action("Done", "MyTask", new { id = @obj.ID })">
                                                 完成</a>}
-                                            }
+                                        }
                                         </td>
                                     </tr>
                                  }

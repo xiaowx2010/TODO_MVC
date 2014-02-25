@@ -192,7 +192,8 @@
                                         @if(obj.TaskStatus != -1){
                                             if (obj.TaskStatus == 1)
                                            {<a href="#" onclick="addNewM(@obj.ID)">延期</a> @Html.Raw("|")}
-                                           <a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a> @Html.Raw("|")
+                                            if (obj.StatusStr() == "未分配")
+                                            {<a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a> @Html.Raw("|")}
                                            <a onclick="return confirm('确认要废止吗,子任务会一同废止！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">废止</a>
                                         }
                                         </td>
@@ -201,7 +202,11 @@
                                             @foreach (var child in obj.Child_Tasks.ToList())
                                             {
                                                 <tr class="@child.InfoStr()">
-                                                    <td>@child.TaskName</td>
+                                                    <td>@child.TaskName 
+                                                    @if (child.TODO_TaskNodes.Count > 0)
+                                            {
+                                                <span style="color:#eeefff; float: right;" title="@child.TODO_TaskNodes.Count 个任务节点" class="label label-success tip-right">@child.TODO_TaskNodes.Count</span>
+                                            }</td>
                                                     <td style="width: 17%">@child.ResponsibleStr()</td>
                                                     <td style="width: 17%">@if (child.TaskDeadLine.HasValue)
                                                                            {@child.TaskDeadLine.Value.ToShortDateString()}</td>
@@ -219,10 +224,9 @@
                                                     <td>
                                                     @if(obj.TaskStatus != -1){
                                                         if (child.TaskStatus == 1)
-                                                        {
-                                       
-                                                        <a href="#" onclick="addNewM(@child.ID)">延期</a> @Html.Raw("|")}
-                                                       <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>@Html.Raw("|")
+                                                        {<a href="#" onclick="addNewM(@child.ID)">延期</a> @Html.Raw("|")}
+                                                        if (child.TaskStatus == 0){
+                                                       <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>@Html.Raw("|")}
                                                        <a onclick="return confirm('确认要废止吗！')" href="@Url.Action("Delete", "Task", new { id = @child.ID })">废止</a>
                                                     }
                                                     </td>
