@@ -175,9 +175,13 @@ namespace TODO.Controllers
                 task.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
                 task.TaskRemark = collection["TaskRemark"];
                 task.TaskStatus = Convert.ToInt32(collection["TaskStatus"]);
-                if (!task.TaskAssignDate.HasValue && task.TaskStatus == 1)
+                if (!task.TaskAssignDate.HasValue && task.TaskStatus == 1){
                     task.TaskAssignDate = DateTime.Now;
-
+                    if (task.Parent_Task != null)
+                    {
+                        task.Parent_Task.TaskStatus = 1;
+                    }
+                }
                 db.TODO_TaskNodes.DeleteAllOnSubmit(task.TODO_TaskNodes);
                 task.TODO_TaskNodes.Clear();
                 CreateNodes(task);
