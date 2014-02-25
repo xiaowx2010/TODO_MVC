@@ -190,7 +190,7 @@
                                         </td>
                                         <td class="center">
                                         @if(obj.TaskStatus != -1){
-                                           if (obj.TaskStatus != 0)
+                                            if (obj.TaskStatus == 1)
                                            {<a href="#" onclick="addNewM(@obj.ID)">延期</a> @Html.Raw("|")}
                                            <a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a> @Html.Raw("|")
                                            <a onclick="return confirm('确认要废止吗,子任务会一同废止！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">废止</a>
@@ -218,7 +218,7 @@
                                                     </td> 
                                                     <td>
                                                     @if(obj.TaskStatus != -1){
-                                                        if (child.TaskStatus != 0)
+                                                        if (child.TaskStatus == 1)
                                                         {
                                        
                                                         <a href="#" onclick="addNewM(@child.ID)">延期</a> @Html.Raw("|")}
