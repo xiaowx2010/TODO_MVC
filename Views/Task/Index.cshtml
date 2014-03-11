@@ -5,7 +5,7 @@
     $(document).ready(function () {
 
         $('#content-table').dataTable({
-            "aaSorting": [[0, "desc"]],
+            "aaSorting": [[0, "desc"],[4, "desc"]],
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "sDom": '<""l>t<"F"fp>',
@@ -55,7 +55,7 @@
 		            ]
         });
 
-        $('select').not('#StatusList').select2();
+        $('select').not('#StatusList').not('#WorkTypeList').not('#UserList').not('#DelayList').select2();
         $("#delay").validate({
             rules: {
                 DelayDate: {
@@ -81,11 +81,20 @@
 			@using (Html.BeginForm("Index", "Task", FormMethod.Get)){
             <div id="breadcrumb">
                 <div style="float:left; margin-left:10px; margin-top:10px">
-                <b style="float:left; margin-top:5px;">任务名称：</b>
-                @Html.TextBoxFor(o => o.TaskName, new {style = "float:left;"})</div>
-                <div style="float:left; margin-left:10px; margin-top:10px"><b style="float:left; margin-top:5px;">任务状态：</b>
+                <b style="float:left; margin-top:5px;">检索：</b>
+                @Html.TextBoxFor(o => o.TaskName, new { style = "float:left;", placeholder="请输入任务名称..."})</div>
+                <div style="float:left; margin-left:10px; margin-top:10px">
+                @Html.DropDownList("WorkTypeList", null, new {style = "float:left; width:150px" })
+                </div>
+                <div style="float:left; margin-left:10px; margin-top:10px">
+                @Html.DropDownList("UserList", null, new { style = "float:left; width:150px" })
+                </div>
+                <div style="float:left; margin-left:10px; margin-top:10px">
+                @Html.DropDownList("DelayList", null, new { style = "float:left; width:150px" })
+                </div>
+                <div style="float:left; margin-left:10px; margin-top:10px">@*<b style="float:left; margin-top:5px;">任务状态：</b>*@
                 @*@Html.ListBoxFor(o => o.TaskStatus, Model.StatusList)*@
-                @Html.DropDownList("StatusList", null, new {style = "float:left; width:120px" })
+                @Html.DropDownList("StatusList", null, new {style = "float:left; width:150px" })
                 <input type="submit" value="查询" class='btn btn-primary' style="float:left; margin-left:10px;"/>
                 </div>
                             <input type='button' value="新增任务" style="margin-right: 20px; margin-top:10px;" onclick="location.href='@Url.Action("Create", "Task")'" class='btn btn-primary subcat_hide' />
@@ -109,7 +118,7 @@
                                             任务名
                                         </th>
                                         <th width="80px">
-                                            任务类型
+                                            工作类别
                                         </th>
                                         <th>
                                             责任人
@@ -152,7 +161,7 @@
                                             }
                                         </td>
                                         <td>
-                                            @obj.TaskType
+                                            @obj.WorkType
                                         </td>
                                         <td>
                                             @obj.ResponsibleStr()
@@ -199,7 +208,7 @@
                                         </td>
                                         <td id="@obj.ID" class="hide_css">
                                             <table class="subTable" border="0" cellpadding="0" cellspacing="0">
-                                            @foreach (var child in obj.Child_Tasks.ToList())
+                                            @foreach (var child in obj.SearchChild(Model.User))
                                             {
                                                 <tr class="@child.InfoStr()">
                                                     <td>@child.TaskName 

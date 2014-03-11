@@ -15,8 +15,11 @@ namespace TODO.Controllers
         //
         // GET: /MyTask/
 
-        public ActionResult Index(string taskName, int statusList = 1)
+        public ActionResult Index(string taskName, int statusList = 1, string delayList = "", string worktypelist = "", int userlist = -1)
         {
+            TODO_Users user = Session["TODOUser"] as TODO_Users;
+            if (userlist == -1)
+                userlist = user.ID;
             ViewBag.ActiveType = "MyTask";
             List<SelectListItem> a = new List<SelectListItem>();
             a.Add(new SelectListItem { Text = "---请选择---", Value = "-2", Selected = true });
@@ -26,20 +29,70 @@ namespace TODO.Controllers
 
             var StatusList = new SelectList(a, "Value", "Text", statusList);
             ViewData["StatusList"] = StatusList;
+
+            List<SelectListItem> b = new List<SelectListItem>();
+            b.Add(new SelectListItem { Text = "-请选择有无延期-", Value = "", Selected = true });
+            b.Add(new SelectListItem { Text = "有", Value = "有" });
+            b.Add(new SelectListItem { Text = "无", Value = "无" });
+            ViewData["DelayList"] = new SelectList(b, "Value", "Text", delayList);
+            TaskDataContext db = new TaskDataContext();
+            List<SelectListItem> c = new List<SelectListItem>();
+            var typelist = from t in db.TODO_WorkType select t;
+            c.Add(new SelectListItem { Text = "-请选择工作类别-", Value = "", Selected = true });
+            foreach (var u in typelist)
+            {
+                c.Add(new SelectListItem { Text = u.name, Value = u.name });
+            }
+            //c.Add(new SelectListItem { Text = "信息中心", Value = "信息中心" });
+            //c.Add(new SelectListItem { Text = "信息化建设与应用工作", Value = "信息化建设与应用工作" });
+            //c.Add(new SelectListItem { Text = "工程建设", Value = "工程建设" });
+            //c.Add(new SelectListItem { Text = "安保工作", Value = "安保工作" });
+            //c.Add(new SelectListItem { Text = "政工工作", Value = "政工工作" });
+            //c.Add(new SelectListItem { Text = "其他工作", Value = "其他工作" });
+            ViewData["WorkTypeList"] = new SelectList(c, "Value", "Text", worktypelist);
+
+            
+            var users = from u in db.TODO_Users where u.IsAvailable select u;
+            List<SelectListItem> userList = new List<SelectListItem>();
+            userList.Add(new SelectListItem { Text = "-请选择责任人-", Value = "0", Selected = true });
+            foreach (var u in users)
+            {
+                userList.Add(new SelectListItem { Text = u.PersonName, Value = u.ID.ToString() });
+            }
+            ViewData["UserList"] = new SelectList(userList, "Value", "Text", userlist);
+
             var model = new  MyTaskListModel()
             {
                 Status = statusList,
                 TaskName = taskName,
-                StatusList = a
+                StatusList = a,
+
+                IsDelay = delayList,
+                DelayList = b,
+                WorkType = worktypelist,
+                WorkTypeList = c,
+                User = userlist,
+                UserList = userList
             };
-            TODO_Users user= Session["TODOUser"] as TODO_Users;
-            TaskDataContext db = new TaskDataContext();
+            
             var task_list = from u in db.TODO_Task_User select u;
             if (!string.IsNullOrEmpty(taskName))
                 task_list = task_list.Where(u => u.TODO_Tasks.TaskName.Contains(model.TaskName));
             if (statusList >= -1)
                 task_list = task_list.Where(u => u.Status == statusList);
-            model.TaskList = task_list.ToList();
+            if (!string.IsNullOrWhiteSpace(worktypelist))
+                task_list = task_list.Where(u => u.TODO_Tasks.WorkType == model.WorkType);
+
+            if (userlist > 0)
+            {
+                task_list = task_list.Where(u => u.UserID == userlist);
+            }
+            if (!string.IsNullOrWhiteSpace(delayList))
+            {
+                var tt = task_list.ToList().Where(u => u.TODO_Tasks.DelayStr() == delayList);
+                task_list = tt.AsQueryable<TODO_Task_User>();
+            }
+            model.TaskList = task_list.ToList<TODO_Task_User>();
             model.UserId = user.ID;
             return View(model);
         }

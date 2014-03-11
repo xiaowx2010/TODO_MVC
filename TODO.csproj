@@ -71,6 +71,7 @@
     <Compile Include="Controllers\TaskController.cs" />
     <Compile Include="Controllers\TaskMarkingController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\WorkTypeController.cs" />
     <Compile Include="Custom\BaseController.cs" />
     <Compile Include="Custom\Common.cs" />
     <Compile Include="Custom\CustomAuthorizeAttribute.cs" />
@@ -319,6 +320,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Task\Detail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WorkType\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WorkType\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\WorkType\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

@@ -40,8 +40,17 @@ namespace TODO.Models
         /// </summary>
         public List<TODO_Task_User> TaskList { get; set; }
         public IEnumerable<SelectListItem> StatusList { get; set; }
+        //是否延期
+        public string IsDelay { get; set; }
+        public IEnumerable<SelectListItem> DelayList { get; set; }
+        //工作类别
+        public string WorkType { get; set; }
+        public IEnumerable<SelectListItem> WorkTypeList { get; set; }
+        //责任人
+        public int User { get; set; }
+        public IEnumerable<SelectListItem> UserList { get; set; }
+
         public int UserId { get; set; }
-       
     }
     public class TaskListModel
     {
@@ -58,7 +67,16 @@ namespace TODO.Models
         /// </summary>
         public List<TODO_Tasks> TaskList { get; set; }
 
-        public IEnumerable<SelectListItem> StatusList { get; set; } 
+        public IEnumerable<SelectListItem> StatusList { get; set; }
+        //是否延期
+        public string IsDelay { get; set; }
+        public IEnumerable<SelectListItem> DelayList { get; set; }
+        //工作类别
+        public string WorkType { get; set; }
+        public IEnumerable<SelectListItem> WorkTypeList { get; set; }
+        //责任人
+        public int User { get; set; }
+        public IEnumerable<SelectListItem> UserList { get; set; }
     }
     public class TaskMarkListModel
     {
