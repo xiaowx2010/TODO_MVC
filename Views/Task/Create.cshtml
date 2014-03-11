@@ -30,10 +30,24 @@
 							<label class="control-label">任务种类:</label>
 							<div class="controls">
 								<select name="TaskType">
-								    <option>固定任务</option>
-								    <option>周期任务</option>
+								    @*<option>固定任务</option>
+								    <option>周期任务</option>*@
 								    <option>考核任务</option>
 							    </select>
+							</div>
+						</div>
+						<div class="control-group">
+							<label class="control-label">工作类别:</label>
+							<div class="controls">
+                            @Html.DropDownList("WorkType", null, new {})
+								@*<select name="WorkType">
+								    <option>信息中心</option>
+								    <option>信息化建设与应用工作</option>
+								    <option>工程建设</option>
+								    <option>安保工作</option>
+								    <option>政工工作</option>
+								    <option>其他工作</option>
+							    </select>*@
 							</div>
 						</div>
 						<div class="control-group">

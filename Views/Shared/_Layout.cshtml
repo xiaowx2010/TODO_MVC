@@ -60,6 +60,8 @@
        {@Html.Raw("class=\"active\"")}><a href="/Task"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
        <li @if (ViewBag.ActiveType == "TaskMarking")
            {@Html.Raw("class=\"active\"")}><a href="/TaskMarking"><i class="icon icon-bookmark"></i> <span>任务评分</span></a></li>
+       <li @if (ViewBag.ActiveType == "WorkType")
+           {@Html.Raw("class=\"active\"")}><a href="/WorkType"><i class="icon icon-book"></i> <span>工作类别管理</span></a></li>
    }
 		</ul>
 	</div>
@@ -67,7 +69,7 @@
         @RenderBody()
         <div class="row-fluid">
 			<div id="footer" class="span12">
-				2014 &copy; YuHe Co.Ltd
+				2014 &copy; 上海雨和信息技术有限公司
 			</div>
 		</div>
     </div>

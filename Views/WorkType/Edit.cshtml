@@ -1,0 +1,57 @@
+﻿@using TODO.PersistObject.models
+@model TODO_WorkType
+<div id="content-header">
+    <h1>
+        工作类别管理</h1>
+</div>
+<div id="breadcrumb">
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <span class="icon"><i class="icon-align-justify"></i></span>
+                    <h5>
+                        修改工作类别</h5>
+                </div>
+                <div class="widget-content nopadding">
+                    @using (Html.BeginForm("Edit", "WorkType", FormMethod.Post, new { @class = "form-horizontal", id = "create" }))
+                    {           
+                        <div class="control-group">
+                            <label class="control-label">
+                                类别名:</label>
+                            <div class="controls">
+                                <input name="TypeName" value="@Model.name"  type="text" />
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <input type="submit" class="btn btn-primary" value="保存" />
+                            <label id="msg" style="color: Red">@ViewData["ErrStr"]</label>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="@Url.Content("~/Content/js/jquery.validate.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#create").validate({
+            rules: {
+                TypeName: {
+                    required: true
+                },
+            },
+            errorClass: "help-inline",
+            errorElement: "span",
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents('.control-group').addClass('error');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents('.control-group').removeClass('error');
+            }
+        });
+    });
+</script>
