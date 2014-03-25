@@ -183,7 +183,7 @@
                                            {@Html.Raw("已废止")}*@
                                         </td>
                                         <td class="center">
-                                         @if (obj.TaskStatus == 0 && obj.TODO_Task_User.Count == 0 && obj.TODO_TaskNodes.Count == 0)
+                                         @if ((obj.TaskStatus == 0 || obj.TaskStatus == 1) && obj.TODO_Task_User.Count == 0 && obj.TODO_TaskNodes.Count == 0)
                                          {
                                             <div class="btn-group">
                                                 <button onclick="create_children(@obj.ID, 1)" class="btn btn-small">生成子任务</button>
