@@ -96,14 +96,6 @@ namespace TODO.Controllers
         }
 
         //
-        // GET: /Task/Details/5
-
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        //
         // GET: /Task/Create
 
         public ActionResult Create()
@@ -187,6 +179,107 @@ namespace TODO.Controllers
             Init_detail_date(db, task);
             return View(task);
 
+        }
+        public JsonResult GetNodeLogs(int id)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+
+                    var logs = from l in db.TODO_User_Node_Logs where l.User_Node == id select new { l.LogType, l.Comments, l.CreateBy, l.CreateDate };
+
+                    return Json(new { status = "success", data = logs.ToList() }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message });
+            }
+        }
+
+        public JsonResult RejectNode(int id, string comment)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.id == id);
+                    if(user_node==null)
+                        throw new Exception("没找到这个节点");
+
+                    user_node.IsDone = 0;
+                    user_node.TODO_Task_User.Status = 1;
+                    user_node.TODO_Task_User.TODO_Tasks.TaskStatus = 1;
+                    if (user_node.TODO_Task_User.TODO_Tasks.Parent_Task != null)
+                        user_node.TODO_Task_User.TODO_Tasks.Parent_Task.TaskStatus = 1;
+
+                    var log = new TODO_User_Node_Logs();
+                    log.TODO_Task_User_Node = user_node;
+                    log.LogType = "退回";
+                    log.Comments = comment;
+                    log.CreateBy = (Session["TODOUser"] as TODO_Users).PersonName;
+                    log.CreateDate = DateTime.Now;
+
+                    db.TODO_User_Node_Logs.InsertOnSubmit(log);
+
+                    db.SubmitChanges();
+
+                    return Json(new { status = "success", data = "" }, JsonRequestBehavior.DenyGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message });
+            }
+        }
+
+        public JsonResult ApproveNode(int id, decimal mark, string comment)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.id == id);
+                    if (user_node == null)
+                        throw new Exception("没找到这个节点");
+
+                    user_node.IsDone = 2;
+
+                    var log = new TODO_User_Node_Logs();
+                    log.TODO_Task_User_Node = user_node;
+                    log.LogType = "通过";
+                    log.Comments = comment;
+                    log.CreateBy = (Session["TODOUser"] as TODO_Users).PersonName;
+                    log.CreateDate = DateTime.Now;
+                    db.TODO_User_Node_Logs.InsertOnSubmit(log);
+
+                    db.SubmitChanges();
+
+                    var task_user = user_node.TODO_Task_User;
+                    var todo_task = task_user.TODO_Tasks;
+                    if (task_user.TODO_Task_User_Node.Where(n => n.IsDone == 2).Count() == todo_task.TODO_TaskNodes.Count)
+                    {
+                        var same_task = from t in todo_task.TODO_Task_User where t.Status != 3 select t;
+                        if (same_task.Count() == 0)
+                            todo_task.TaskStatus = 3;
+                        if (todo_task.Parent_Task != null)
+                        {
+                            var same_todo = from t in todo_task.Parent_Task.Child_Tasks where t.TaskStatus != 3 select t;
+                            if (same_todo.Count() == 0)
+                                todo_task.Parent_Task.TaskStatus = 3;
+                        }
+                        db.SubmitChanges();
+
+                    }
+                    
+                    return Json(new { status = "success", data = "" }, JsonRequestBehavior.DenyGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message });
+            }
         }
         //
         // GET: /Task/Edit/5

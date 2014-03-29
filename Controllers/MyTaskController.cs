@@ -156,7 +156,6 @@ namespace TODO.Controllers
             try
             {
 
-                //TODO:改造保存时Node的处理
                 task_user.ComplatedComments = collection["ComplatedComments"];
                 var nodes = Request.Form.GetValues("SelectNode");
                 var user_nodes = (db.TODO_Task_User_Node.Where<TODO_Task_User_Node>(n => n.Task_User==id)).ToList<TODO_Task_User_Node>();
@@ -219,7 +218,8 @@ namespace TODO.Controllers
                             var user_node = user_nodes.FirstOrDefault(un => un.Task_Node == n);
                             if (user_node != null)
                             {
-                                user_node.IsDone = 1;
+                                if (user_node.IsDone < 1)
+                                    user_node.IsDone = 1;
                             }
                             else
                             {
