@@ -111,14 +111,37 @@ namespace TODO.Controllers
 
         private void InitNodes(TaskDataContext db, TODO_Task_User task_user)
         {
-            if (task_user.ComplatedNode != null)
-            {
-                var selectnodes = task_user.ComplatedNode.Split('^').ToList<string>();
-                ViewBag.SelectNodes = selectnodes;
-            }
-            var nodelist = from n in db.TODO_TaskNodes where n.TaskID == task_user.TODO_Tasks.ID select n;
-            ViewData["nodelist"] = nodelist.ToList<TODO_TaskNodes>();
+            //if (task_user.ComplatedNode != null)
+            //{
+            //    var selectnodes = task_user.ComplatedNode.Split('^').ToList<string>();
+            //    ViewBag.SelectNodes = selectnodes;
+            //}
+
+            var nodelist = (from n in db.TODO_TaskNodes
+                            join un in db.TODO_Task_User_Node on n.ID equals un.Task_Node into t
+                     from rt in t.DefaultIfEmpty()
+                            where n.TaskID == task_user.TODO_Tasks.ID && (rt == null || rt.Task_User == task_user.ID)
+                     select new { node = n, user_node = rt }).Select(item => Tuple.Create(item.node, item.user_node));
+
+            //var nodelist = (from un in db.TODO_Task_User_Node
+            //                join n in db.TODO_TaskNodes on un.Task_Node equals n.ID into t
+            //                from rt in t.DefaultIfEmpty()
+            //                where rt.TaskID == task_user.TODO_Tasks.ID && un.Task_User == task_user.ID
+            //                select new { node = rt, user_node = un }).Select(item => Tuple.Create(item.node, item.user_node));
+            //select Tuple.Create(n, un);
+            ViewData["nodelist"] = nodelist;
+            //ViewData["nodelist"] = nodelist.ToList<TODO_TaskNodes>();
         }
+        //private void InitNodes(TaskDataContext db, TODO_Task_User task_user)
+        //{
+        //    if (task_user.ComplatedNode != null)
+        //    {
+        //        var selectnodes = task_user.ComplatedNode.Split('^').ToList<string>();
+        //        ViewBag.SelectNodes = selectnodes;
+        //    }
+        //    var nodelist = from n in db.TODO_TaskNodes where n.TaskID == task_user.TODO_Tasks.ID select n;
+        //    ViewData["nodelist"] = nodelist.ToList<TODO_TaskNodes>();
+        //}
 
         [HttpPost]
         public ActionResult Details(int id, FormCollection collection)
@@ -132,15 +155,35 @@ namespace TODO.Controllers
                 throw new Exception("该任务不存在！");
             try
             {
+
+                //TODO:改造保存时Node的处理
                 task_user.ComplatedComments = collection["ComplatedComments"];
                 var nodes = Request.Form.GetValues("SelectNode");
+                var user_nodes = (db.TODO_Task_User_Node.Where<TODO_Task_User_Node>(n => n.Task_User==id)).ToList<TODO_Task_User_Node>();
+                user_nodes.ForEach(n => { if (n.IsDone < 2)  n.IsDone = 0;  });
                 if (nodes != null)
                 {
-                    task_user.ComplatedNode = string.Join("^", nodes);
+                    nodes.ToList().ForEach(n => { 
+                        var user_node = user_nodes.FirstOrDefault(un => un.Task_Node.ToString()==n);
+                        if (user_node != null)
+                        {
+                            user_node.IsDone = 1;
+                        }
+                        else
+                        {
+                            user_node = new TODO_Task_User_Node();
+                            user_node.Task_Node = Convert.ToInt32(n);
+                            user_node.Task_User = id;
+                            user_node.IsDone = 1;
+                            db.TODO_Task_User_Node.InsertOnSubmit(user_node);
+                        }
+                    });
+                    //user_nodes.Where(n => nodes.Contains<string>(n.id.ToString())).ToList().ForEach(n => n.IsDone = 1);
+                    //task_user.ComplatedNode = string.Join("^", nodes);
 
                 }
                 db.SubmitChanges();
-                if (task_user.SelectNodes() != null && task_user.SelectNodes().Count == task_user.TODO_Tasks.TODO_TaskNodes.Count)
+                if (task_user.TODO_Task_User_Node != null && task_user.TODO_Task_User_Node.Where(n=>n.IsDone>0).Count() == task_user.TODO_Tasks.TODO_TaskNodes.Count)
                 {
                     return Done(id);
                 }
@@ -169,8 +212,25 @@ namespace TODO.Controllers
                     var todo_task = task_user.TODO_Tasks;
                     if (todo_task.TODO_TaskNodes.Count > 0)
                     {
-                        var nodes = from node in todo_task.TODO_TaskNodes select node.NodeNum.ToString();
-                        task_user.ComplatedNode = task_user.ComplatedNode = string.Join("^", nodes);
+                        var nodes = from node in todo_task.TODO_TaskNodes select node.ID;
+                        var user_nodes = (db.TODO_Task_User_Node.Where<TODO_Task_User_Node>(n => n.Task_User == id)).ToList<TODO_Task_User_Node>();
+                        nodes.ToList().ForEach(n =>
+                        {
+                            var user_node = user_nodes.FirstOrDefault(un => un.Task_Node == n);
+                            if (user_node != null)
+                            {
+                                user_node.IsDone = 1;
+                            }
+                            else
+                            {
+                                user_node = new TODO_Task_User_Node();
+                                user_node.Task_Node = n;
+                                user_node.Task_User = id;
+                                user_node.IsDone = 1;
+                                db.TODO_Task_User_Node.InsertOnSubmit(user_node);
+                            }
+                        });
+                        //task_user.ComplatedNode = task_user.ComplatedNode = string.Join("^", nodes);
                     }
                     var same_task = from t in todo_task.TODO_Task_User where t.Status != 2 select t;
                     if (same_task.Count()==0)
@@ -192,6 +252,24 @@ namespace TODO.Controllers
             }
             return RedirectToAction("Index", new { operateMsg = delmsg });
 
+        }
+
+        public JsonResult GetNodeLogs(int id)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+
+                    var logs = from l in db.TODO_User_Node_Logs where l.User_Node == id select new { l.LogType, l.Comments, l.CreateBy, l.CreateDate };
+                    
+                    return Json(new { status = "success", data = logs.ToList() }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new {status="error", data=ex.Message});
+            }
         }
     }
 }

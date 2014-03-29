@@ -67,14 +67,20 @@
 								<textarea disabled name="TaskRemark">@Model.TODO_Tasks.TaskRemark</textarea>
 							</div>
 						</div>
-                        foreach (var node in ViewData["nodelist"] as List<TODO_TaskNodes>)
+                        foreach (var n in ViewData["nodelist"] as IEnumerable<Tuple<TODO_TaskNodes, TODO_Task_User_Node>>)
                         {
                         <div class="control-group">
                             <label class="control-label">任务节点:</label>
 							<div class="controls">
-								<textarea disabled name="NodeRemark">@node.NodeName</textarea>
-                                完成：<input @if (ViewBag.SelectNodes != null && ViewBag.SelectNodes.Contains(node.NodeNum.ToString()))
-                                          {@Html.Raw("checked")} name="SelectNode" type="checkbox" value="@node.NodeNum" />
+								<textarea disabled name="NodeRemark">@n.Item1.NodeName</textarea>
+                                @if (n.Item2 == null){@Html.Raw("详细")}
+                                else
+                                {<a href="#" onclick="showDetail(@n.Item2.id)">详细</a>}
+                                |
+                                @if (n.Item2 != null && n.Item2.IsDone == 2){@Html.Raw("已通过")}
+                                else
+                                {@Html.Raw("完成")}：<input @if (n.Item2 != null && n.Item2.IsDone == 1){@Html.Raw("checked")} name="SelectNode" 
+                                @if (n.Item2 != null && n.Item2.IsDone == 2){@Html.Raw("disabled")} type="checkbox" value="@n.Item1.ID" />
 							</div>
 						</div>
                         }
@@ -93,8 +99,15 @@
 			</div>						
 		</div>
 	</div>
-    
+    <div title="节点详情" id="NodeDetail" style="margin: 8px;">
+                            
+								<div class="modal-body">
+									
+								</div>
+                            
+							</div>
 </div>
+<script type="text/javascript" src="@Url.Content("~/Content/js/jquery-ui.min.js")"></script>
 <script type="text/javascript">
      $(document).ready(function () {
         $("#TaskType").val("@Model.TODO_Tasks.TaskType");
@@ -102,4 +115,37 @@
        
         $('input[type=checkbox]').uniform();
     });
+
+    function showDetail(id) {
+        if (id == 0)
+            return;
+        $.getJSON("/MyTask/GetNodeLogs?id=" + id, function (data) {
+            var items = [];
+            $(".modal-body").html("");
+            if (data.status != "success") {
+                alert("获取数据错误，请再试一遍！");
+                return;
+            }
+            $.each(data.data, function (key, l) {
+               
+                    var str = l.CreateBy + "于" + l.CreateDate + "将该节点" + l.LogType + "。原因：" + l.Comments;
+                    items.push("<li id='" + key + "'>" + str + "</li>");
+              
+            });
+
+            $("<ul/>", {
+                "class": "my-new-list",
+                html: items.join("")
+            }).appendTo(".modal-body");
+            var modeldialog = $("#NodeDetail");
+            modeldialog.dialog({
+                modal: true,
+                autoOpen: false,
+                resizable: false,
+                width: 495
+            });
+            modeldialog.dialog('open');
+        });
+        
+    }
 </script>
