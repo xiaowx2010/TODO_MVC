@@ -93,11 +93,14 @@
                             {
                             <div class="rwgl_jdxx">
 							    <div style="margin-bottom:5px">	节点：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
-                                @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
-                                {
-                                    <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
-                                    <a href="javascript:void(0)" onclick="showDelay(@task_user.ID, @node.ID, this)"><img alt="延续期" src="/Content/img/btn_02.gif" /></a>
-                                }
+                            @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
+                            {
+                                <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
+                            }
+                            @if(node.GetUserNodeStatusStr(@task_user.ID) != "已通过")
+                            {
+                                <a href="javascript:void(0)" onclick="showDelay(@task_user.ID, @node.ID, this)"><img alt="延续期" src="/Content/img/btn_02.gif" /></a>
+                            }
                                 </div>
                                 <div class="txt_01">
                                     @node.GetUserNodeStatusStr(task_user.ID)&nbsp;&nbsp;&nbsp;&nbsp;
@@ -111,8 +114,10 @@
                                    <div class="xxline">
                                     <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
 							         <tr>
-							          <td width="80" align="right" valign="top" class="txt_03">@log.LogType 简述：</td>
-                                      <td width="88%" align="left" valign="top" class="txt_03"><span>@log.Comments&nbsp;&nbsp;&nbsp;&nbsp;@log.CreateDate.ToShortDateString()</span></td>
+							         <td width="98%" align="left" valign="top" class="txt_03">
+                                        @Html.Raw("本节点于")@log.CreateDate.ToShortDateString()@Html.Raw("被")@log.CreateBy<font color="@log.TypeColor()"><b> @log.LogType</b></font>。
+                                        简述：@log.Comments
+                                        </td>
                                       </tr>
                                     </table>
                                    </div>
@@ -161,6 +166,9 @@
                             @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
                             {
                                 <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
+                            }
+                            @if (node.GetUserNodeStatusStr(@task_user.ID) != "已通过")
+                            {
                                 <a href="javascript:void(0)" onclick="showDelay(@task_user.ID, @node.ID, this)"><img alt="延续期" src="/Content/img/btn_02.gif" /></a>
                             }
                             </div>
@@ -176,8 +184,10 @@
                                <div class="xxline">
                                 <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
 							     <tr>
-							      <td width="80" align="right" valign="top" class="txt_03">@log.LogType 简述：</td>
-                                  <td width="88%" align="left" valign="top" class="txt_03"><span>@log.Comments&nbsp;&nbsp;&nbsp;&nbsp;@log.CreateDate.ToShortDateString()</span></td>
+							      <td width="98%" align="left" valign="top" class="txt_03">
+                                        @Html.Raw("本节点于")@log.CreateDate.ToShortDateString()@Html.Raw("被")@log.CreateBy<font color="@log.TypeColor()"><b> @log.LogType</b></font>。
+                                        简述：@log.Comments
+                                        </td>
                                   </tr>
                                 </table>
                                </div>
@@ -286,13 +296,22 @@
              select_node.parent().next().html("" + nodeinfo.status + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;续期：" + nodeinfo.ccount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;延期：" + nodeinfo.dcount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;评分：" + nodeinfo.mark + "");
          });
      }
-     var loginit = "<div class='xxline'><table width='80%' border='0' cellspacing='0' cellpadding='0' class='xxline'>\
-     <tbody><tr><td width='80' align='right' valign='top' class='txt_03'>action 简述：</td><td width='88%' align='left' \
-     valign='top' class='txt_03'><span>comment&nbsp;&nbsp;&nbsp;&nbsp;date</span></td></tr></tbody></table></div>";
-     function refreshNodeLog(action)
+     var loginit = "<div class='xxline'><table width='80%' border='0' cellspacing='0' cellpadding='0' class='xxline'><tbody><tr>\
+     <td width='98%' align='left' valign='top' class='txt_03'>本节点于[datetime]被[approver]<font color='[color]'><b> [action]</b></font>。\
+     简述：[comment]</td></tr></tbody></table></div>";
+     function refreshNodeLog()
      {
-        var log = loginit.replace("action",action);
-         select_node.parent().next().next().append(loginit);
+        $.getJSON("/Task/GetLastNodeLog", { task_user_id: $("#task_user_id").val(), node_id: $("#node_id").val()}, function (data) {
+            if (data.status != "success") {
+                alert("获取数据错误，请刷新页面！");
+                return;
+            }
+
+            var log = loginit.replace("[action]",data.data.LogType).replace("[comment]",data.data.Comments)
+            .replace("[datetime]",data.data.CreateDate).replace("[color]",data.data.Color)
+            .replace("[approver]",data.data.CreateBy);
+            select_node.parent().next().next().append(log);
+        });
      }
      function approve() {
      if(!$('#mark').valid())
@@ -315,6 +334,7 @@
          }, "json");
      }
      function deny() {
+     $('#mark').val("0");
       if(!$('#mark').valid())
      {
         $('#mark').focus();
@@ -326,6 +346,7 @@
          $.post(url, { task_user_id: $("#task_user_id").val(), node_id: $("#node_id").val(), comment: $("#comment").val() }, function (data) {
              if (data.status == "success") {
                  refreshNodeinfo($("#task_user_id").val(), $("#node_id").val());
+                 refreshNodeLog();
                  closeDlg('Approval');
              }
              else {

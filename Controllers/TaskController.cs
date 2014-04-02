@@ -215,7 +215,7 @@ namespace TODO.Controllers
                 return Json(new { status = "error", data = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-        public JsonResult GetNodeLog(int task_user_id, int node_id)
+        public JsonResult GetLastNodeLog(int task_user_id, int node_id)
         {
             try
             {
@@ -225,9 +225,13 @@ namespace TODO.Controllers
                     if (user_node == null)
                         return Json(new { status = "success", data = "" }, JsonRequestBehavior.AllowGet);
 
-                    var logs = from l in db.TODO_User_Node_Logs where l.TODO_Task_User_Node == user_node select new { l.LogType, l.Comments, l.CreateBy, l.CreateDate };
-
-                    return Json(new { status = "success", data = logs.ToList() }, JsonRequestBehavior.AllowGet);
+                    //var logs = from l in db.TODO_User_Node_Logs where l.TODO_Task_User_Node == user_node select new { l.LogType, l.Comments, l.CreateBy, CreateDate = l.CreateDate.ToShortDateString() };
+                    var log = db.TODO_User_Node_Logs
+                        .OrderByDescending(x => x.CreateDate)
+                        .Where(x => x.User_Node == user_node.id)
+                        .First();
+                    //var last_log = logs.Last();
+                    return Json(new { status = "success", data = new { log.LogType, log.Comments, log.CreateBy, CreateDate = log.CreateDate.ToShortDateString(), Color=log.TypeColor()} }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
@@ -330,6 +334,7 @@ namespace TODO.Controllers
                     db.SubmitChanges();
 
                     var task_user = user_node.TODO_Task_User;
+                    task_user.Status = 3;
                     var todo_task = task_user.TODO_Tasks;
                     if (task_user.TODO_Task_User_Node.Where(n => n.IsDone == 2).Count() == todo_task.TODO_TaskNodes.Count)
                     {

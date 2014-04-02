@@ -199,7 +199,52 @@ namespace TODO.Controllers
                 return View(task_user);
             }
         }
-
+        public void MyDone(int id)
+        {
+            using (TaskDataContext db = new TaskDataContext())
+            {
+                var task_user = db.TODO_Task_User.SingleOrDefault<TODO_Task_User>(s => s.ID == id);
+                task_user.Status = 2;
+                task_user.CompleteDate = DateTime.Now;
+                var todo_task = task_user.TODO_Tasks;
+                //if (todo_task.TODO_TaskNodes.Count > 0)
+                //{
+                //    var nodes = from node in todo_task.TODO_TaskNodes select node.ID;
+                //    var user_nodes = (db.TODO_Task_User_Node.Where<TODO_Task_User_Node>(n => n.Task_User == id)).ToList<TODO_Task_User_Node>();
+                //    nodes.ToList().ForEach(n =>
+                //    {
+                //        var user_node = user_nodes.FirstOrDefault(un => un.Task_Node == n);
+                //        if (user_node != null)
+                //        {
+                //            if (user_node.IsDone < 1)
+                //                user_node.IsDone = 1;
+                //        }
+                //        else
+                //        {
+                //            user_node = new TODO_Task_User_Node();
+                //            user_node.Task_Node = n;
+                //            user_node.Task_User = id;
+                //            user_node.IsDone = 1;
+                //            user_node.DelayCount = user_node.ChangeCount = 0;
+                //            user_node.ComplateDate = DateTime.Now;
+                //            user_node.ApprovalDate = null;
+                //            db.TODO_Task_User_Node.InsertOnSubmit(user_node);
+                //        }
+                //    });
+                //    //task_user.ComplatedNode = task_user.ComplatedNode = string.Join("^", nodes);
+                //}
+                var same_task = from t in todo_task.TODO_Task_User where t.Status != 2 select t;
+                if (same_task.Count() == 0)
+                    todo_task.TaskStatus = 2;
+                if (todo_task.Parent_Task != null)
+                {
+                    var same_todo = from t in todo_task.Parent_Task.Child_Tasks where t.TaskStatus != 2 select t;
+                    if (same_todo.Count() == 0)
+                        todo_task.Parent_Task.TaskStatus = 2;
+                }
+                db.SubmitChanges();
+            }
+        }
         public ActionResult Done(int id)
         {
 
@@ -207,49 +252,7 @@ namespace TODO.Controllers
             string delmsg = "";
             try
             {
-                using (TaskDataContext db = new TaskDataContext())
-                {
-                    var task_user = db.TODO_Task_User.SingleOrDefault<TODO_Task_User>(s => s.ID == id);
-                    task_user.Status = 2;
-                    task_user.CompleteDate = DateTime.Now;
-                    var todo_task = task_user.TODO_Tasks;
-                    if (todo_task.TODO_TaskNodes.Count > 0)
-                    {
-                        var nodes = from node in todo_task.TODO_TaskNodes select node.ID;
-                        var user_nodes = (db.TODO_Task_User_Node.Where<TODO_Task_User_Node>(n => n.Task_User == id)).ToList<TODO_Task_User_Node>();
-                        nodes.ToList().ForEach(n =>
-                        {
-                            var user_node = user_nodes.FirstOrDefault(un => un.Task_Node == n);
-                            if (user_node != null)
-                            {
-                                if (user_node.IsDone < 1)
-                                    user_node.IsDone = 1;
-                            }
-                            else
-                            {
-                                user_node = new TODO_Task_User_Node();
-                                user_node.Task_Node = n;
-                                user_node.Task_User = id;
-                                user_node.IsDone = 1;
-                                user_node.DelayCount = user_node.ChangeCount = 0;
-                                user_node.ComplateDate = DateTime.Now;
-                                user_node.ApprovalDate = null;
-                                db.TODO_Task_User_Node.InsertOnSubmit(user_node);
-                            }
-                        });
-                        //task_user.ComplatedNode = task_user.ComplatedNode = string.Join("^", nodes);
-                    }
-                    var same_task = from t in todo_task.TODO_Task_User where t.Status != 2 select t;
-                    if (same_task.Count()==0)
-                        todo_task.TaskStatus = 2;
-                    if (todo_task.Parent_Task != null)
-                    {
-                        var same_todo = from t in todo_task.Parent_Task.Child_Tasks where t.TaskStatus != 2 select t;
-                        if (same_todo.Count() == 0)
-                            todo_task.Parent_Task.TaskStatus = 2;
-                    }
-                    db.SubmitChanges();
-                }
+                MyDone(id);
                 
             }
             catch (Exception ex)
@@ -296,7 +299,7 @@ namespace TODO.Controllers
                     else
                     {
                         user_node = new TODO_Task_User_Node();
-                        user_node.Task_Node = unid;
+                        user_node.Task_Node = nid;
                         user_node.Task_User = id;
                         user_node.IsDone = 1;
                         user_node.DelayCount = user_node.ChangeCount = 0;
@@ -307,12 +310,17 @@ namespace TODO.Controllers
 
                     var nlog = new TODO_User_Node_Logs();
                     nlog.TODO_Task_User_Node = user_node;
-                    nlog.LogType = "完成";
+                    nlog.LogType = "提交";
                     nlog.Comments = comment;
                     nlog.CreateBy = (Session["TODOUser"] as TODO_Users).PersonName;
                     nlog.CreateDate = DateTime.Now;
                     db.TODO_User_Node_Logs.InsertOnSubmit(nlog);
+                    db.SubmitChanges();
 
+                    if (task_user.TODO_Task_User_Node != null && task_user.TODO_Task_User_Node.Where(n => n.IsDone > 0).Count() == task_user.TODO_Tasks.TODO_TaskNodes.Count)
+                    {
+                        MyDone(id);
+                    }
                     return Json(new { status = "success", data = "" }, JsonRequestBehavior.AllowGet);
                 }
             }

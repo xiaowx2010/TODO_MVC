@@ -88,7 +88,7 @@
                                 {@Html.Raw("disabled")} type="checkbox" id="@Html.Raw("check_")@n.Item1.ID" value="@n.Item1.ID" />*@
 							</div>
 							@if (n.Item2 == null || n.Item2.IsDone ==0){
-                                <label class="control-label">任务完成简述:</label>
+                                <label class="control-label">节点完成简述:</label>
 							    <div class="controls">
 								    <textarea name="ComplatedComments"></textarea>
                                     <a href="javascript:void(0)" onclick="approval(@Model.ID, @n.Item1.ID, @if (n.Item2 != null){@n.Item2.id}else{@Html.Raw("0")}, this)"><img alt="提交" src="/Content/img/btn_03.gif" /></a>
@@ -102,10 +102,10 @@
                                    <div class="xxline">
                                     <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
 							         <tr>
-							          <td width="80" align="right" valign="top" class="txt_03">@log.LogType 简述：</td>
-                                      <td width="88%" align="left" valign="top" class="txt_03">
-                                        <span>@log.Comments&nbsp;&nbsp;&nbsp;&nbsp;@log.CreateDate.ToShortDateString()</span>
-                                    </td>
+                                      <td width="98%" align="left" valign="top" class="txt_03">
+                                        @Html.Raw("本节点于")@log.CreateDate.ToShortDateString()@Html.Raw("被")@log.CreateBy<font color="@log.TypeColor()"><b> @log.LogType</b></font>。
+                                        简述：@log.Comments
+                                        </td>
                                       </tr>
                                     </table>
                                    </div>
