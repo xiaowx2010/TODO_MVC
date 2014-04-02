@@ -406,7 +406,7 @@
                  return;
              }
              var nodeinfo = data.data;
-             select_node.parent().next().html("" + nodeinfo.status + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;提交日期：" + nodeinfo.cdate + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;审核日期：" + nodeinfo.adate + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;续期：" + nodeinfo.ccount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;延期：" + nodeinfo.dcount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;评分：" + nodeinfo.mark + "");
+             select_node.parent().next().html("" + nodeinfo.status + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;续期：" + nodeinfo.ccount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;延期：" + nodeinfo.dcount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;评分：" + nodeinfo.mark + "");
          });
      }
 
