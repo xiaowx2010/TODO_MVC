@@ -392,6 +392,7 @@
          $.post(url, { task_user_id: $("#task_user_id").val(), node_id: $("#node_id").val(), delaydate: $("#DelayDate").val(), reason: $("#Reason").val(), realdelay: isdelay }, function (data) {
              if (data.status == "success") {
                  refreshAllinfo($("#task_user_id").val(), $("#node_id").val());
+                 refreshNodeLog();
                  closeDlg('Delay');
              }
              else {
