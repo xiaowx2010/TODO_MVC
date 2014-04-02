@@ -1,5 +1,6 @@
 ﻿@using TODO.PersistObject.models
 @model TODO_Tasks
+<link rel="stylesheet" href="@Url.Content("~/Content/css/TaskDetails.css")" />
 <div id="content-header">
 	<h1>任务管理</h1>
 </div>
@@ -28,7 +29,8 @@
 							<label class="control-label">截止日期:</label>
 							<div class="controls">
                             @*<label class="control-label">@Model.TODO_Tasks.TaskDeadLine.Value.ToShortDateString()</label>*@
-								<input disabled name="TaskDeadLine" type="text"  value="@if(@Model.TaskDeadLine.HasValue){@Model.TaskDeadLine.Value.ToShortDateString()}" />
+								<input disabled name="TaskDeadLine" type="text"  value="@if (@Model.TaskDeadLine.HasValue)
+                                                                {@Model.TaskDeadLine.Value.ToShortDateString()}" />
 							</div>
 						</div>
 						<div class="control-group  span4">
@@ -71,11 +73,12 @@
 						<i class="icon-magnet"></i>									
 					</span>
 					<h5>子任务：@child.TaskName</h5>
-                    <h5>截止日期：@if(@child.TaskDeadLine.HasValue){@child.TaskDeadLine.Value.ToShortDateString()}</h5>
+                    @*<h5>截止日期：@if (@child.TaskDeadLine.HasValue)
+                             {@child.TaskDeadLine.Value.ToShortDateString()}</h5>
                     @if (child.TODO_DelayLog.Count > 0)
                     {
                         <h5>延期数：@child.TODO_DelayLog.Count</h5>
-                    }
+                    }*@
 				</div>
                 </a>
                      <div class="collapse" id="@child.ID">
@@ -88,21 +91,38 @@
 							<div class="controls">
                             @foreach (var node in child.TODO_TaskNodes)
                             {
-							<div style="margin-bottom:5px">	节点：<input disabled name="TaskName" value="@node.NodeName" type="text" /> 
-                            @if (task_user.SelectNodes() != null && task_user.SelectNodes().Contains(node.NodeNum.ToString()))
-                            {@Html.Raw("已完成")} </div>
+                            <div class="rwgl_jdxx">
+							    <div style="margin-bottom:5px">	节点：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
+                                @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
+                                {
+                                    <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
+                                    <a href="javascript:void(0)" onclick="showDelay(@task_user.ID, @node.ID, this)"><img alt="延续期" src="/Content/img/btn_02.gif" /></a>
+                                }
+                                </div>
+                                <div class="txt_01">
+                                    @node.GetUserNodeStatusStr(task_user.ID)&nbsp;&nbsp;&nbsp;&nbsp;
+                                        |&nbsp;&nbsp;&nbsp;&nbsp;续期：@node.GetUserCCount(task_user.ID)次&nbsp;&nbsp;&nbsp;&nbsp;
+                                        |&nbsp;&nbsp;&nbsp;&nbsp;延期：@node.GetUserDCount(task_user.ID)次&nbsp;&nbsp;&nbsp;&nbsp;
+                                        |&nbsp;&nbsp;&nbsp;&nbsp;评分：@node.GetMark(task_user.ID)
+                                </div>
+                                <div class="wc_sh">
+                                @foreach (var log in node.GetLogs(task_user.ID))
+                                {
+                                   <div class="xxline">
+                                    <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
+							         <tr>
+							          <td width="80" align="right" valign="top" class="txt_03">@log.LogType 简述：</td>
+                                      <td width="88%" align="left" valign="top" class="txt_03"><span>@log.Comments&nbsp;&nbsp;&nbsp;&nbsp;@log.CreateDate.ToShortDateString()</span></td>
+                                      </tr>
+                                    </table>
+                                   </div>
+                                }
+                                </div>
+                            </div>
                             }
 							</div>
 						</div>
-						
-						<div class="control-group">
-							<label class="control-label">任务完成简述:</label>
-							<div class="controls">
-                            @*<label class="control-label">@Model.TODO_Tasks.TaskRemark</label>*@
-								<textarea disabled name="TaskRemark">@task_user.ComplatedComments</textarea>
-							</div>
-						</div>
-                         </div>
+					</div>
     
 				</div>
                 
@@ -122,10 +142,10 @@
 						<i class="icon-align-justify"></i>									
 					</span>
 					<h5>任务进展</h5>
-                    @if (Model.TODO_DelayLog.Count > 0)
+                    @*@if (Model.TODO_DelayLog.Count > 0)
                     {
                         <h5>延期数：@Model.TODO_DelayLog.Count</h5>
-                    }
+                    }*@
 				</div>
                 @foreach (var task_user in Model.TODO_Task_User)
                 {
@@ -136,18 +156,35 @@
 							<div class="controls">
                             @foreach (var node in Model.TODO_TaskNodes)
                             {
-							<div style="margin-bottom:5px">	节点：<input disabled name="TaskName" value="@node.NodeName" type="text" /> 
-                            @if (task_user.SelectNodes() != null && task_user.SelectNodes().Contains(node.NodeNum.ToString()))
-                            {@Html.Raw("已完成")} </div>
+                                <div class="rwgl_jdxx">
+							<div style="margin-bottom:5px">	节点：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
+                            @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
+                            {
+                                <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
+                                <a href="javascript:void(0)" onclick="showDelay(@task_user.ID, @node.ID, this)"><img alt="延续期" src="/Content/img/btn_02.gif" /></a>
                             }
-							</div>
-						</div>
-						
-						<div class="control-group">
-							<label class="control-label">任务完成简述:</label>
-							<div class="controls">
-                            @*<label class="control-label">@Model.TODO_Tasks.TaskRemark</label>*@
-								<textarea disabled name="TaskRemark">@task_user.ComplatedComments</textarea>
+                            </div>
+                            <div class="txt_01">
+                                @node.GetUserNodeStatusStr(task_user.ID)&nbsp;&nbsp;&nbsp;&nbsp;
+                                    |&nbsp;&nbsp;&nbsp;&nbsp;续期：@node.GetUserCCount(task_user.ID)次&nbsp;&nbsp;&nbsp;&nbsp;
+                                    |&nbsp;&nbsp;&nbsp;&nbsp;延期：@node.GetUserDCount(task_user.ID)次&nbsp;&nbsp;&nbsp;&nbsp;
+                                    |&nbsp;&nbsp;&nbsp;&nbsp;评分：@node.GetMark(task_user.ID)
+                            </div>
+                            <div class="wc_sh">
+                            @foreach (var log in node.GetLogs(task_user.ID))
+                            {
+                               <div class="xxline">
+                                <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
+							     <tr>
+							      <td width="80" align="right" valign="top" class="txt_03">@log.LogType 简述：</td>
+                                  <td width="88%" align="left" valign="top" class="txt_03"><span>@log.Comments&nbsp;&nbsp;&nbsp;&nbsp;@log.CreateDate.ToShortDateString()</span></td>
+                                  </tr>
+                                </table>
+                               </div>
+                            }
+                            </div>
+                            </div>
+                            }
 							</div>
 						</div>
                          </div>
@@ -158,9 +195,198 @@
 		</div>
 	</div>
     }
+    <div title="审 核" id="Approval" style="margin: 8px; display:none;">
+		<div class="modal-body">
+            <table  cellpadding="0" cellspacing="0" class="addtable">
+                <tr>
+                    <td>分数：</td>
+                    <td><form id="approval_tab"><input placeholder="5分为满分,当驳回时分数不起作用" name="mark" id="mark" type="text" /></form></td>
+                </tr>
+                                        
+                <tr>
+                    <td>理由：</td>
+                    <td>
+                        <textarea rows="3" style="width:320px" placeholder="请输入通过或者驳回的理由" name="comment" id="comment"></textarea>
+                    </td>
+                </tr>
+		        <tr>
+                    <td colspan="2" style="text-align: left;padding-left:100px;">
+                    <button style="margin-left: 10px;" class='btn btn-success' onclick="approve()">通 过</button>
+                    <button style="margin-left: 20px;" class='btn btn-warning' onclick="deny()">驳 回</button>
+                    <button style="margin-left: 20px;" class='btn btn-primary' onclick="closeDlg('Approval')">取 消</button>
+                    </td>
+                </tr>
+            </table>
+		</div>
+	</div>
+    <div title="延续期" id="Delay" style="margin: 8px; display:none;">
+		<div class="modal-body">
+		    <table cellpadding="0" cellspacing="0" class="addtable">
+                <tr>
+                    <td>延期时间：</td>
+                    <td><input name="DelayDate" id="DelayDate" type="text"  class="datepicker" /></td>
+                </tr>
+                                        
+                <tr>
+                    <td width="90">延期理由：</td>
+                    <td><textarea name="Reason" id="Reason" ></textarea></td>
+                </tr>
+			    <tr>
+                    <td colspan="2" style="text-align: left;padding-left:80px;">
+                        <button style="margin-left: 10px;" class='btn btn-success' onclick="changeDate(false)">续 期</button>
+                        <button style="margin-left: 20px;" class='btn btn-warning' onclick="changeDate(true)">延 期</button>
+                        <button style="margin-left: 20px;" class='btn btn-primary' onclick="closeDlg('Delay')">取 消</button>
+                    </td>
+                </tr>
+            </table>
+	    </div>
+	</div>
+    
+    <input name="task_user_id" id="task_user_id" type="hidden" />
+    <input name="node_id" id="node_id" type="hidden" />
 </div>
+<script type="text/javascript" src="@Url.Content("~/Content/js/jquery.validate.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Content/js/jquery-ui.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Content/js/common.js")"></script>
 <script type="text/javascript">
      $(document).ready(function () {
-       
-    });
+         $('.datepicker').datepicker({ dateFormat: "yy/mm/dd" });
+        $("#approval_tab").validate({
+            rules: {
+                mark: {
+                    required:false,
+                    number:true,
+                    max:5
+                },
+            },
+            errorClass: "help-inline",
+            errorElement: "span",
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents('.control-group').addClass('error');
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents('.control-group').removeClass('error');
+            }
+        });
+     });
+     function date2str(x, y) {
+         var z = { M: x.getMonth() + 1, d: x.getDate(), h: x.getHours(), m: x.getMinutes(), s: x.getSeconds() };
+         y = y.replace(/(M+|d+|h+|m+|s+)/g, function (v) { return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2) });
+         return y.replace(/(y+)/g, function (v) { return x.getFullYear().toString().slice(-v.length) });
+     }
+
+     function refreshNodeinfo(task_user_id, node_id) {
+         $.getJSON("/Task/GetNodeInfo", { task_user_id: task_user_id, node_id: node_id }, function (data) {
+             if (data.status != "success") {
+                 alert(data.data);
+                 return;
+             }
+             select_node.hide();
+             var nodeinfo = data.data;
+             select_node.parent().next().html("" + nodeinfo.status + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;续期：" + nodeinfo.ccount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;延期：" + nodeinfo.dcount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;评分：" + nodeinfo.mark + "");
+         });
+     }
+     var loginit = "<div class='xxline'><table width='80%' border='0' cellspacing='0' cellpadding='0' class='xxline'>\
+     <tbody><tr><td width='80' align='right' valign='top' class='txt_03'>action 简述：</td><td width='88%' align='left' \
+     valign='top' class='txt_03'><span>comment&nbsp;&nbsp;&nbsp;&nbsp;date</span></td></tr></tbody></table></div>";
+     function refreshNodeLog(action)
+     {
+        var log = loginit.replace("action",action);
+         select_node.parent().next().next().append(loginit);
+     }
+     function approve() {
+     if(!$('#mark').valid())
+     {
+        $('#mark').focus();
+        return ;
+     }
+         if (!confirm("确定要通过该项么？"))
+             return;
+         var url = "/Task/ApproveNode";
+         $.post(url, { task_user_id: $("#task_user_id").val(), node_id: $("#node_id").val(), mark: $("#mark").val(), comment: $("#comment").val() }, function (data) {
+             if (data.status == "success") {
+                 refreshNodeinfo($("#task_user_id").val(), $("#node_id").val());
+                 refreshNodeLog();
+                 closeDlg('Approval');
+             }
+             else {
+                 alert(data.data);
+             }
+         }, "json");
+     }
+     function deny() {
+      if(!$('#mark').valid())
+     {
+        $('#mark').focus();
+        return ;
+     }
+        if(!confirm("确定要驳回该项么？"))
+            return;
+         var url = "/Task/DenyNode";
+         $.post(url, { task_user_id: $("#task_user_id").val(), node_id: $("#node_id").val(), comment: $("#comment").val() }, function (data) {
+             if (data.status == "success") {
+                 refreshNodeinfo($("#task_user_id").val(), $("#node_id").val());
+                 closeDlg('Approval');
+             }
+             else {
+                 alert(data.data);
+             }
+         }, "json");
+     }
+
+     var select_node;
+     function showApproval(task_user_id, node_id, obj) {
+         $("#mark").val("");
+         $("#comment").val("");
+         select_node = $(obj);
+         var modeldialog = $("#Approval");
+         $("#task_user_id").val(task_user_id);
+         $("#node_id").val(node_id);
+
+         modeldialog.dialog({
+             modal: true,
+             autoOpen: false,
+             resizable: false,
+             width: 495
+         });
+         modeldialog.dialog('open');
+     }
+     function showDelay(task_user_id, node_id, obj) {
+         var modeldialog = $("#Delay");
+         select_node = $(obj);
+         $("#task_user_id").val(task_user_id);
+         $("#node_id").val(node_id);
+         modeldialog.dialog({
+             modal: true,
+             autoOpen: false,
+             resizable: false,
+             width: 495
+         });
+         modeldialog.dialog('open');
+     }
+     function changeDate(isdelay) {
+         if (!confirm("确定要改变截止日期么？"))
+             return;
+         var url = "/Task/AjaxDelay";
+         $.post(url, { task_user_id: $("#task_user_id").val(), node_id: $("#node_id").val(), delaydate: $("#DelayDate").val(), reason: $("#Reason").val(), realdelay: isdelay }, function (data) {
+             if (data.status == "success") {
+                 refreshAllinfo($("#task_user_id").val(), $("#node_id").val());
+                 closeDlg('Delay');
+             }
+             else {
+                 alert(data.data);
+             }
+         }, "json");
+     }
+     function refreshAllinfo(task_user_id, node_id) {
+         $.getJSON("/Task/GetNodeInfo", { task_user_id: task_user_id, node_id: node_id }, function (data) {
+             if (data.status != "success") {
+                 alert(data.data);
+                 return;
+             }
+             var nodeinfo = data.data;
+             select_node.parent().next().html("" + nodeinfo.status + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;提交日期：" + nodeinfo.cdate + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;审核日期：" + nodeinfo.adate + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;续期：" + nodeinfo.ccount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;延期：" + nodeinfo.dcount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;评分：" + nodeinfo.mark + "");
+         });
+     }
+
 </script>

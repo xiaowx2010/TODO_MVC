@@ -1,5 +1,6 @@
 ﻿@using TODO.PersistObject.models
 @model TODO_Task_User
+<link rel="stylesheet" href="@Url.Content("~/Content/css/TaskDetails.css")" />
 <div id="content-header">
 	<h1>任务管理</h1>
 </div>
@@ -67,45 +68,67 @@
 								<textarea disabled name="TaskRemark">@Model.TODO_Tasks.TaskRemark</textarea>
 							</div>
 						</div>
-                        foreach (var n in ViewData["nodelist"] as IEnumerable<Tuple<TODO_TaskNodes, TODO_Task_User_Node>>)
-                        {
-                        <div class="control-group">
+         foreach (var n in ViewData["nodelist"] as IEnumerable<Tuple<TODO_TaskNodes, TODO_Task_User_Node>>)
+         {
+                        <div class="control-group ">
                             <label class="control-label">任务节点:</label>
 							<div class="controls">
 								<textarea disabled name="NodeRemark">@n.Item1.NodeName</textarea>
-                                @if (n.Item2 == null){@Html.Raw("详细")}
+   @*                             @if (n.Item2 == null)
+                                {@Html.Raw("详细")}
                                 else
                                 {<a href="#" onclick="showDetail(@n.Item2.id)">详细</a>}
-                                |
-                                @if (n.Item2 != null && n.Item2.IsDone == 2){@Html.Raw("已通过")}
-                                else
-                                {@Html.Raw("完成")}：<input @if (n.Item2 != null && n.Item2.IsDone == 1){@Html.Raw("checked")} name="SelectNode" 
-                                @if (n.Item2 != null && n.Item2.IsDone == 2){@Html.Raw("disabled")} type="checkbox" value="@n.Item1.ID" />
+                                |*@
+                                @if (n.Item2 != null && n.Item2.IsDone == 2)
+                                {@Html.Raw("已通过")}
+                                else if (n.Item2 != null && n.Item2.IsDone == 1)
+                                {@Html.Raw("已完成")}@*：<input @if (n.Item2 != null && n.Item2.IsDone == 1)
+                                                         {@Html.Raw("checked")} name="SelectNode" 
+                                @if (n.Item2 != null && n.Item2.IsDone == 2)
+                                {@Html.Raw("disabled")} type="checkbox" id="@Html.Raw("check_")@n.Item1.ID" value="@n.Item1.ID" />*@
 							</div>
+							@if (n.Item2 == null || n.Item2.IsDone ==0){
+                                <label class="control-label">任务完成简述:</label>
+							    <div class="controls">
+								    <textarea name="ComplatedComments"></textarea>
+                                    <a href="javascript:void(0)" onclick="approval(@Model.ID, @n.Item1.ID, @if (n.Item2 != null){@n.Item2.id}else{@Html.Raw("0")}, this)"><img alt="提交" src="/Content/img/btn_03.gif" /></a>
+							    </div>
+                            }
+                            @if (n.Item2 != null)
+                            {
+                                <div class="rwgl_jdxx wc_sh" align="center" style="width:90%">
+                                @foreach (var log in n.Item2.TODO_User_Node_Logs)
+                                {
+                                   <div class="xxline">
+                                    <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
+							         <tr>
+							          <td width="80" align="right" valign="top" class="txt_03">@log.LogType 简述：</td>
+                                      <td width="88%" align="left" valign="top" class="txt_03">
+                                        <span>@log.Comments&nbsp;&nbsp;&nbsp;&nbsp;@log.CreateDate.ToShortDateString()</span>
+                                    </td>
+                                      </tr>
+                                    </table>
+                                   </div>
+                                }
+                                </div>
+                            }
 						</div>
-                        }
-						<div class="control-group">
+         }
+						@*<div class="control-group">
 							<label class="control-label">任务完成简述:</label>
 							<div class="controls">
-                            @*<label class="control-label">@Model.TODO_Tasks.TaskRemark</label>*@
+                            <label class="control-label">@Model.TODO_Tasks.TaskRemark</label>
 								<textarea name="ComplatedComments">@Model.ComplatedComments</textarea>
 							</div>
 						</div>
 						<div class="form-actions">
 							<input type="submit" class="btn btn-primary" value="保存" />
-						</div>
+						</div>*@
      }
 				</div>
 			</div>						
 		</div>
 	</div>
-    <div title="节点详情" id="NodeDetail" style="margin: 8px;">
-                            
-								<div class="modal-body">
-									
-								</div>
-                            
-							</div>
 </div>
 <script type="text/javascript" src="@Url.Content("~/Content/js/jquery-ui.min.js")"></script>
 <script type="text/javascript">
@@ -115,37 +138,50 @@
        
         $('input[type=checkbox]').uniform();
     });
-
-    function showDetail(id) {
-        if (id == 0)
+    function approval(id, nid, unid, obj) {
+        if (!confirm("确定完成该节点么，提交后不能更改！"))
             return;
-        $.getJSON("/MyTask/GetNodeLogs?id=" + id, function (data) {
-            var items = [];
-            $(".modal-body").html("");
-            if (data.status != "success") {
-                alert("获取数据错误，请再试一遍！");
-                return;
+        var comment = $(obj).prev().val();
+        var url = "/MyTask/SubmitNode";
+        $.post(url, { id: id, nid: nid, unid: unid, comment: comment }, function (data) {
+            if (data.status == "success") {
+                location.reload();
             }
-            $.each(data.data, function (key, l) {
-               
-                    var str = l.CreateBy + "于" + l.CreateDate + "将该节点" + l.LogType + "。原因：" + l.Comments;
-                    items.push("<li id='" + key + "'>" + str + "</li>");
-              
-            });
-
-            $("<ul/>", {
-                "class": "my-new-list",
-                html: items.join("")
-            }).appendTo(".modal-body");
-            var modeldialog = $("#NodeDetail");
-            modeldialog.dialog({
-                modal: true,
-                autoOpen: false,
-                resizable: false,
-                width: 495
-            });
-            modeldialog.dialog('open');
-        });
-        
+            else {
+                alert(data.data);
+            }
+        }, "json");
     }
+//    function showDetail(id) {
+//        if (id == 0)
+//            return;
+//        $.getJSON("/MyTask/GetNodeLogs?id=" + id, function (data) {
+//            var items = [];
+//            $(".modal-body").html("");
+//            if (data.status != "success") {
+//                alert("获取数据错误，请再试一遍！");
+//                return;
+//            }
+//            $.each(data.data, function (key, l) {
+//               
+//                    var str = l.CreateBy + "于" + l.CreateDate + "将该节点" + l.LogType + "。原因：" + l.Comments;
+//                    items.push("<li id='" + key + "'>" + str + "</li>");
+//              
+//            });
+
+//            $("<ul/>", {
+//                "class": "my-new-list",
+//                html: items.join("")
+//            }).appendTo(".modal-body");
+//            var modeldialog = $("#NodeDetail");
+//            modeldialog.dialog({
+//                modal: true,
+//                autoOpen: false,
+//                resizable: false,
+//                width: 495
+//            });
+//            modeldialog.dialog('open');
+//        });
+//        
+//   }
 </script>

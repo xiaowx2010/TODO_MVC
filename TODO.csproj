@@ -106,6 +106,7 @@
     <Content Include="Content\css\fullcalendar.css" />
     <Content Include="Content\css\jquery.gritter.css" />
     <Content Include="Content\css\select2.css" />
+    <Content Include="Content\css\TaskDetails.css" />
     <Content Include="Content\css\unicorn.blue.css" />
     <Content Include="Content\css\unicorn.grey.css" />
     <Content Include="Content\css\unicorn.login.css" />
@@ -114,6 +115,9 @@
     <Content Include="Content\css\uniform.css" />
     <Content Include="Content\img\alpha.png" />
     <Content Include="Content\img\breadcrumb.png" />
+    <Content Include="Content\img\btn_01.gif" />
+    <Content Include="Content\img\btn_02.gif" />
+    <Content Include="Content\img\btn_03.gif" />
     <Content Include="Content\img\demo\av1.jpg" />
     <Content Include="Content\img\demo\av2.jpg" />
     <Content Include="Content\img\demo\av3.jpg" />
@@ -173,6 +177,7 @@
     <Content Include="Content\img\select2x2.png" />
     <Content Include="Content\img\spinner.gif" />
     <Content Include="Content\img\sprite.png" />
+    <Content Include="Content\img\star.png" />
     <Content Include="Content\js\bootstrap-colorpicker.js" />
     <Content Include="Content\js\bootstrap-datepicker.js" />
     <Content Include="Content\js\bootstrap.min.js" />

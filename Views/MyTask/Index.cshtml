@@ -144,16 +144,18 @@
                                         }
                                         else if (obj.Status == -1)
                                         { @Html.Raw("已废止");
+                                        }else if (obj.Status == 3)
+                                        { @Html.Raw("已通过");
                                         }
                                         </td>
                                         <td class="center">
                                         @if (obj.TODO_Users.ID == Model.UserId)
                                         {
                                             <a href="@Url.Action("Details", "MyTask", new { id = @obj.ID })">详细 </a> 
-                                            if (obj.Status == 1)
+                                            @*if (obj.Status == 1)
                                             {
                                             @Html.Raw("|")<a onclick="return confirm('确认要完成吗！')" href="@Url.Action("Done", "MyTask", new { id = @obj.ID })">
-                                                完成</a>}
+                                                完成</a>}*@
                                         }
                                         </td>
                                     </tr>

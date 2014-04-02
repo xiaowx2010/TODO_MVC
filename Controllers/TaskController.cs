@@ -11,6 +11,7 @@ namespace TODO.Controllers
     using Models;
     using PersistObject.models;
     using DAO;
+    using System.Data.Linq;
     [AdminAuthorize]
     public class TaskController : BaseController
     {
@@ -172,32 +173,68 @@ namespace TODO.Controllers
         {
             ViewBag.ActiveType = "TaskControl";
             TaskDataContext db = new TaskDataContext();
+            DataLoadOptions ds = new DataLoadOptions();
+            ds.LoadWith<TODO_Tasks>(t => t.TODO_TaskNodes);
+            ds.LoadWith<TODO_TaskNodes>(n => n.TODO_Task_User_Node);
+            db.LoadOptions = ds;
             var task = db.TODO_Tasks.SingleOrDefault<TODO_Tasks>(s => s.ID == id);
             if (task == null)
                 throw new Exception("该任务不存在！");
 
-            Init_detail_date(db, task);
+            //Init_detail_date(db, task);
             return View(task);
 
         }
-        public JsonResult GetNodeLogs(int id)
+        public JsonResult GetNodeInfo(int task_user_id, int node_id)
         {
             try
             {
                 using (TaskDataContext db = new TaskDataContext())
                 {
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.Task_User == task_user_id && n.Task_Node == node_id);
+                    if (user_node == null)
+                        return Json(new { status = "error", data = "获取节点数据失败，请刷新页面！" }, JsonRequestBehavior.AllowGet);
 
-                    var logs = from l in db.TODO_User_Node_Logs where l.User_Node == id select new { l.LogType, l.Comments, l.CreateBy, l.CreateDate };
+                    return Json(new
+                    {
+                        status = "success",
+                        data = new
+                        {
+                            status = user_node.GetUserNodeStatusStr(),
+                            cdate = user_node.ComplateDate.HasValue ? user_node.ComplateDate.Value.ToShortDateString() : "",
+                            adate = user_node.ApprovalDate.HasValue ? user_node.ApprovalDate.Value.ToShortDateString() : "",
+                            ccount = user_node.ChangeCount,
+                            dcount = user_node.DelayCount,
+                            mark = user_node.Mark
+                        }
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult GetNodeLog(int task_user_id, int node_id)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.Task_User == task_user_id && n.Task_Node == node_id);
+                    if (user_node == null)
+                        return Json(new { status = "success", data = "" }, JsonRequestBehavior.AllowGet);
+
+                    var logs = from l in db.TODO_User_Node_Logs where l.TODO_Task_User_Node == user_node select new { l.LogType, l.Comments, l.CreateBy, l.CreateDate };
 
                     return Json(new { status = "success", data = logs.ToList() }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { status = "error", data = ex.Message });
+                return Json(new { status = "error", data = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
-
         public JsonResult RejectNode(int id, string comment)
         {
             try
@@ -233,18 +270,54 @@ namespace TODO.Controllers
                 return Json(new { status = "error", data = ex.Message });
             }
         }
-
-        public JsonResult ApproveNode(int id, decimal mark, string comment)
+        public JsonResult DenyNode(int task_user_id, int node_id, string comment)
         {
             try
             {
                 using (TaskDataContext db = new TaskDataContext())
                 {
-                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.id == id);
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.Task_User == task_user_id && n.Task_Node == node_id);
+                    if (user_node == null)
+                        throw new Exception("没找到这个节点");
+
+                    user_node.IsDone = 0;
+                    user_node.Mark = 0;
+                    user_node.TODO_Task_User.Status = 1;
+                    user_node.TODO_Task_User.TODO_Tasks.TaskStatus = 1;
+                    if (user_node.TODO_Task_User.TODO_Tasks.Parent_Task != null)
+                        user_node.TODO_Task_User.TODO_Tasks.Parent_Task.TaskStatus = 1;
+
+                    var log = new TODO_User_Node_Logs();
+                    log.TODO_Task_User_Node = user_node;
+                    log.LogType = "驳回";
+                    log.Comments = comment;
+                    log.CreateBy = (Session["TODOUser"] as TODO_Users).PersonName;
+                    log.CreateDate = DateTime.Now;
+                    db.TODO_User_Node_Logs.InsertOnSubmit(log);
+
+                    db.SubmitChanges();
+
+                    return Json(new { status = "success", data = "" }, JsonRequestBehavior.DenyGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message });
+            }
+        }
+        public JsonResult ApproveNode(int task_user_id, int node_id, int mark, string comment)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.Task_User == task_user_id && n.Task_Node == node_id);
                     if (user_node == null)
                         throw new Exception("没找到这个节点");
 
                     user_node.IsDone = 2;
+                    user_node.ApprovalDate = DateTime.Now;
+                    user_node.Mark = mark;
 
                     var log = new TODO_User_Node_Logs();
                     log.TODO_Task_User_Node = user_node;
@@ -273,6 +346,74 @@ namespace TODO.Controllers
 
                     }
                     
+                    return Json(new { status = "success", data = "" }, JsonRequestBehavior.DenyGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message });
+            }
+        }
+        public JsonResult AjaxDelay(int task_user_id, int node_id, string delaydate, string reason, bool realdelay)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault<TODO_Task_User_Node>(n => n.Task_User == task_user_id && n.Task_Node == node_id);
+                    if (user_node == null)
+                    {
+                        user_node = new TODO_Task_User_Node();
+                        user_node.Task_Node = node_id;
+                        user_node.Task_User = task_user_id;
+                        user_node.IsDone = 0;
+                        user_node.DelayCount = user_node.ChangeCount = 0;
+                        user_node.ComplateDate = null;
+                        user_node.ApprovalDate = null;
+                        db.TODO_Task_User_Node.InsertOnSubmit(user_node);
+                        db.SubmitChanges();
+                    }
+
+                     var ddate = Convert.ToDateTime(delaydate);
+                     var task = user_node.TODO_Task_User.TODO_Tasks;
+                     DateTime pervDate = task.TaskDeadLine.Value;
+                     task.TaskDeadLine = ddate;
+                     if (realdelay)
+                     {
+                         TODO_DelayLog log = new TODO_DelayLog();
+
+                         log.DelayDate = ddate;
+                         log.PreviousDate = pervDate;
+                         log.Reason = reason;
+                         log.TODO_Tasks = task;
+                         log.Creator = (Session["TODOUser"] as TODO_Users).UserName;
+
+                         task.TODO_DelayLog.Add(log);
+                     }
+                    
+                    string LogType = "";
+                    if (realdelay)
+                    {
+                        LogType = "延期";
+                        user_node.DelayCount = user_node.DelayCount + 1;
+                    }
+                    else
+                    {
+                        LogType = "续期";
+                        user_node.ChangeCount = user_node.ChangeCount + 1;
+                    }
+
+                    
+                    var nlog = new TODO_User_Node_Logs();
+                    nlog.TODO_Task_User_Node = user_node;
+                    nlog.LogType = LogType;
+                    nlog.Comments = reason;
+                    nlog.CreateBy = (Session["TODOUser"] as TODO_Users).PersonName;
+                    nlog.CreateDate = DateTime.Now;
+                    db.TODO_User_Node_Logs.InsertOnSubmit(nlog);
+
+                    db.SubmitChanges();
+
                     return Json(new { status = "success", data = "" }, JsonRequestBehavior.DenyGet);
                 }
             }
@@ -423,6 +564,15 @@ namespace TODO.Controllers
                     }
                 }
 
+            }
+
+            if (task.TaskStatus == 1 && task.TODO_TaskNodes.Count == 0)
+            {
+                TODO_TaskNodes node = new TODO_TaskNodes();
+                node.NodeName = task.TaskRemark;
+                node.NodeNum = 1;
+                node.TODO_Tasks = task;
+                task.TODO_TaskNodes.Add(node);
             }
         }
 

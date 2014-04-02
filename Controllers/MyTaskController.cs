@@ -9,6 +9,7 @@ namespace TODO.Controllers
     using Custom;
     using Models;
     using PersistObject.models;
+    using System.Data.Linq;
     [CustomAuthorize]
     public class MyTaskController : BaseController
     {
@@ -101,6 +102,11 @@ namespace TODO.Controllers
         {
             ViewBag.ActiveType = "MyTask";
             TaskDataContext db = new TaskDataContext();
+            DataLoadOptions ds = new DataLoadOptions();
+            ds.LoadWith<TODO_Task_User>(t => t.TODO_Tasks);
+            ds.LoadWith<TODO_Tasks>(t => t.TODO_TaskNodes);
+            ds.LoadWith<TODO_TaskNodes>(n => n.TODO_Task_User_Node);
+            db.LoadOptions = ds;
             var task_user = db.TODO_Task_User.SingleOrDefault<TODO_Task_User>(s => s.ID == id);
             if (task_user == null)
                 throw new Exception("该任务不存在！");
@@ -111,14 +117,9 @@ namespace TODO.Controllers
 
         private void InitNodes(TaskDataContext db, TODO_Task_User task_user)
         {
-            //if (task_user.ComplatedNode != null)
-            //{
-            //    var selectnodes = task_user.ComplatedNode.Split('^').ToList<string>();
-            //    ViewBag.SelectNodes = selectnodes;
-            //}
-
             var nodelist = (from n in db.TODO_TaskNodes
-                            join un in db.TODO_Task_User_Node on n.ID equals un.Task_Node into t
+                            join un in
+                                (from u in db.TODO_Task_User_Node where u.Task_User == task_user.ID select u) on n.ID equals un.Task_Node into t
                      from rt in t.DefaultIfEmpty()
                             where n.TaskID == task_user.TODO_Tasks.ID && (rt == null || rt.Task_User == task_user.ID)
                      select new { node = n, user_node = rt }).Select(item => Tuple.Create(item.node, item.user_node));
@@ -174,6 +175,9 @@ namespace TODO.Controllers
                             user_node.Task_Node = Convert.ToInt32(n);
                             user_node.Task_User = id;
                             user_node.IsDone = 1;
+                            user_node.DelayCount = user_node.ChangeCount = 0;
+                            user_node.ComplateDate = DateTime.Now;
+                            user_node.ApprovalDate = null;
                             db.TODO_Task_User_Node.InsertOnSubmit(user_node);
                         }
                     });
@@ -227,6 +231,9 @@ namespace TODO.Controllers
                                 user_node.Task_Node = n;
                                 user_node.Task_User = id;
                                 user_node.IsDone = 1;
+                                user_node.DelayCount = user_node.ChangeCount = 0;
+                                user_node.ComplateDate = DateTime.Now;
+                                user_node.ApprovalDate = null;
                                 db.TODO_Task_User_Node.InsertOnSubmit(user_node);
                             }
                         });
@@ -261,14 +268,57 @@ namespace TODO.Controllers
                 using (TaskDataContext db = new TaskDataContext())
                 {
 
-                    var logs = from l in db.TODO_User_Node_Logs where l.User_Node == id select new { l.LogType, l.Comments, l.CreateBy, l.CreateDate };
+                    var logs = from l in db.TODO_User_Node_Logs where l.User_Node == id select new { l.LogType, l.Comments, l.CreateBy, CreateDate = l.CreateDate.ToShortDateString() };
                     
                     return Json(new { status = "success", data = logs.ToList() }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)
             {
-                return Json(new {status="error", data=ex.Message});
+                return Json(new { status = "error", data = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult SubmitNode(int id, int nid, int unid, string comment)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var task_user = db.TODO_Task_User.SingleOrDefault<TODO_Task_User>(s => s.ID == id);
+                    if (task_user == null)
+                        throw new Exception("该任务不存在！");
+
+                    var user_node = db.TODO_Task_User_Node.SingleOrDefault(un => un.id == unid);
+                    if (user_node != null)
+                    {
+                        user_node.IsDone = 1;
+                    }
+                    else
+                    {
+                        user_node = new TODO_Task_User_Node();
+                        user_node.Task_Node = unid;
+                        user_node.Task_User = id;
+                        user_node.IsDone = 1;
+                        user_node.DelayCount = user_node.ChangeCount = 0;
+                        user_node.ComplateDate = DateTime.Now;
+                        user_node.ApprovalDate = null;
+                        db.TODO_Task_User_Node.InsertOnSubmit(user_node);
+                    }
+
+                    var nlog = new TODO_User_Node_Logs();
+                    nlog.TODO_Task_User_Node = user_node;
+                    nlog.LogType = "完成";
+                    nlog.Comments = comment;
+                    nlog.CreateBy = (Session["TODOUser"] as TODO_Users).PersonName;
+                    nlog.CreateDate = DateTime.Now;
+                    db.TODO_User_Node_Logs.InsertOnSubmit(nlog);
+
+                    return Json(new { status = "success", data = "" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }
     }
