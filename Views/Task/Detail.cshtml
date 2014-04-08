@@ -92,7 +92,7 @@
                             @foreach (var node in child.TODO_TaskNodes)
                             {
                             <div class="rwgl_jdxx">
-							    <div style="margin-bottom:5px">	节点：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
+							    <div style="margin-bottom:5px">	工作要求：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
                             @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
                             {
                                 <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
@@ -111,7 +111,7 @@
                                 <div class="wc_sh">
                                 @foreach (var log in node.GetLogs(task_user.ID))
                                 {
-                                   <div class="xxline">
+                                   <div>
                                     <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
 							         <tr>
 							         <td width="98%" align="left" valign="top" class="txt_03">
@@ -162,7 +162,7 @@
                             @foreach (var node in Model.TODO_TaskNodes)
                             {
                                 <div class="rwgl_jdxx">
-							<div style="margin-bottom:5px">	节点：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
+							<div style="margin-bottom:5px">	工作要求：<input class="nodeinput" disabled name="TaskName" value="@node.NodeName" type="text" />
                             @if (node.GetUserNodeStatusStr(@task_user.ID) == "已完成")
                             {
                                 <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
@@ -181,7 +181,7 @@
                             <div class="wc_sh">
                             @foreach (var log in node.GetLogs(task_user.ID))
                             {
-                               <div class="xxline">
+                               <div>
                                 <table width="80%"  border="0" cellspacing="0" cellpadding="0" class="xxline">
 							     <tr>
 							      <td width="98%" align="left" valign="top" class="txt_03">
@@ -296,7 +296,7 @@
              select_node.parent().next().html("" + nodeinfo.status + "&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;续期：" + nodeinfo.ccount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;延期：" + nodeinfo.dcount + "次&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;评分：" + nodeinfo.mark + "");
          });
      }
-     var loginit = "<div class='xxline'><table width='80%' border='0' cellspacing='0' cellpadding='0' class='xxline'><tbody><tr>\
+     var loginit = "<div><table width='80%' border='0' cellspacing='0' cellpadding='0' class='xxline'><tbody><tr>\
      <td width='98%' align='left' valign='top' class='txt_03'>本节点于[datetime]被[approver]<font color='[color]'><b> [action]</b></font>。\
      简述：[comment]</td></tr></tbody></table></div>";
      function refreshNodeLog()

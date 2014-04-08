@@ -58,8 +58,10 @@
                 {@Html.Raw("class=\"active\"")}><a href="/User"><i class="icon icon-user"></i> <span>员工管理</span></a></li>
 			<li @if (ViewBag.ActiveType == "TaskControl")
        {@Html.Raw("class=\"active\"")}><a href="/Task"><i class="icon icon-inbox"></i> <span>任务管理</span></a></li>
+	   <!--
        <li @if (ViewBag.ActiveType == "TaskMarking")
            {@Html.Raw("class=\"active\"")}><a href="/TaskMarking"><i class="icon icon-bookmark"></i> <span>任务评分</span></a></li>
+		  --> 
        <li @if (ViewBag.ActiveType == "WorkType")
            {@Html.Raw("class=\"active\"")}><a href="/WorkType"><i class="icon icon-book"></i> <span>工作类别管理</span></a></li>
    }

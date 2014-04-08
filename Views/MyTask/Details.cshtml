@@ -71,7 +71,7 @@
          foreach (var n in ViewData["nodelist"] as IEnumerable<Tuple<TODO_TaskNodes, TODO_Task_User_Node>>)
          {
                         <div class="control-group ">
-                            <label class="control-label">任务节点:</label>
+                            <label class="control-label">工作要求:</label>
 							<div class="controls">
 								<textarea disabled name="NodeRemark">@n.Item1.NodeName</textarea>
    @*                             @if (n.Item2 == null)
@@ -132,10 +132,10 @@
 </div>
 <script type="text/javascript" src="@Url.Content("~/Content/js/jquery-ui.min.js")"></script>
 <script type="text/javascript">
-     $(document).ready(function () {
+    $(document).ready(function () {
         $("#TaskType").val("@Model.TODO_Tasks.TaskType");
         $("#Priority").val("@Model.TODO_Tasks.Priority");
-       
+
         $('input[type=checkbox]').uniform();
     });
     function approval(id, nid, unid, obj) {
@@ -152,36 +152,36 @@
             }
         }, "json");
     }
-//    function showDetail(id) {
-//        if (id == 0)
-//            return;
-//        $.getJSON("/MyTask/GetNodeLogs?id=" + id, function (data) {
-//            var items = [];
-//            $(".modal-body").html("");
-//            if (data.status != "success") {
-//                alert("获取数据错误，请再试一遍！");
-//                return;
-//            }
-//            $.each(data.data, function (key, l) {
-//               
-//                    var str = l.CreateBy + "于" + l.CreateDate + "将该节点" + l.LogType + "。原因：" + l.Comments;
-//                    items.push("<li id='" + key + "'>" + str + "</li>");
-//              
-//            });
+    //    function showDetail(id) {
+    //        if (id == 0)
+    //            return;
+    //        $.getJSON("/MyTask/GetNodeLogs?id=" + id, function (data) {
+    //            var items = [];
+    //            $(".modal-body").html("");
+    //            if (data.status != "success") {
+    //                alert("获取数据错误，请再试一遍！");
+    //                return;
+    //            }
+    //            $.each(data.data, function (key, l) {
+    //               
+    //                    var str = l.CreateBy + "于" + l.CreateDate + "将该节点" + l.LogType + "。原因：" + l.Comments;
+    //                    items.push("<li id='" + key + "'>" + str + "</li>");
+    //              
+    //            });
 
-//            $("<ul/>", {
-//                "class": "my-new-list",
-//                html: items.join("")
-//            }).appendTo(".modal-body");
-//            var modeldialog = $("#NodeDetail");
-//            modeldialog.dialog({
-//                modal: true,
-//                autoOpen: false,
-//                resizable: false,
-//                width: 495
-//            });
-//            modeldialog.dialog('open');
-//        });
-//        
-//   }
+    //            $("<ul/>", {
+    //                "class": "my-new-list",
+    //                html: items.join("")
+    //            }).appendTo(".modal-body");
+    //            var modeldialog = $("#NodeDetail");
+    //            modeldialog.dialog({
+    //                modal: true,
+    //                autoOpen: false,
+    //                resizable: false,
+    //                width: 495
+    //            });
+    //            modeldialog.dialog('open');
+    //        });
+    //        
+    //   }
 </script>
