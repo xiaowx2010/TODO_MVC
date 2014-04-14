@@ -5,7 +5,7 @@
     $(document).ready(function () {
 
         $('#content-table').dataTable({
-            "aaSorting": [[0, "desc"],[4, "desc"]],
+            "aaSorting": [[6, "desc"],[4, "desc"],[0, "desc"]],
             "bJQueryUI": true,
             "sPaginationType": "full_numbers",
             "sDom": '<""l>t<"F"fp>',
@@ -38,9 +38,9 @@
                         var nCell = document.createElement('td');
                         nCell.colSpan = iColspan;
                         nCell.align = "left";
-                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(9).attr("id");
+                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(10).attr("id");
                         nCell.className = "group";
-                        nCell.innerHTML = nTrs.eq(i).find("td").eq(9).html();
+                        nCell.innerHTML = nTrs.eq(i).find("td").eq(10).html();
                         nGroup.appendChild(nCell);
                         $(nGroup).insertAfter(nTrs[i]);
                         groupVal = sGroup;
@@ -50,7 +50,7 @@
                 }
             },
             "aoColumns": [
-			            null, null, null, null, null, null,null,
+			            null, null, null, null, null, null,null,null,
 			            { "asSorting": [] }, { "asSorting": [] }, { "asSorting": [] }
 		            ]
         });
@@ -126,8 +126,11 @@
                                         <th width="80px">
                                             截止日期
                                         </th>
-                                        <th width="80px">
-                                            有无延期
+                                        <th width="45px">
+                                            延期
+                                        </th>
+                                        <th width="45px">
+                                            审核
                                         </th>
                                         <th width="80px">
                                             任务状态
@@ -153,7 +156,7 @@
                                             @if (obj.Child_Tasks.Count > 0)
                                             {
                                                 <span onclick="toggleSubcat(@obj.ID)" >[展开]</span>
-                                                <span style="color:#eeefff; float: right;" title="@obj.Child_Tasks.Count 个子任务" class="label label-info tip-right">@obj.Child_Tasks.Count</span>
+                                                <span style="color:#eeefff; float: right;" title="@obj.SearchChild(Model.User, Model.TaskStatus).Count 个子任务" class="label label-info tip-right">@obj.SearchChild(Model.User, Model.TaskStatus).Count</span>
                                             }
                                             else if (obj.TODO_TaskNodes.Count > 0)
                                             {
@@ -171,6 +174,7 @@
                                             {@obj.TaskDeadLine.Value.ToShortDateString()}
                                         </td>
                                         <td>@obj.DelayStr()</td>
+                                        <td>@obj.ApprovalStr()</td>
                                         <td class="center">
                                         @obj.StatusStr()
                                           @* @if (obj.TaskStatus == 0)
@@ -200,7 +204,7 @@
                                         <td class="center">
                                         @if(obj.TaskStatus != -1){
                                             if (obj.TaskStatus == 1)
-                                           {<a href="#" onclick="addNewM(@obj.ID)">延期</a> @Html.Raw("|")}
+                                           {<a href="#" onclick="addNewM(@obj.ID)">主动延期</a> @Html.Raw("|")}
                                             if (obj.StatusStr() == "未分配")
                                             {<a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a> @Html.Raw("|")}
                                            <a onclick="return confirm('确认要废止吗,子任务会一同废止！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">废止</a>
@@ -208,10 +212,10 @@
                                         </td>
                                         <td id="@obj.ID" class="hide_css">
                                             <table class="subTable" border="0" cellpadding="0" cellspacing="0">
-                                            @foreach (var child in obj.SearchChild(Model.User))
+                                            @foreach (var child in obj.SearchChild(Model.User, Model.TaskStatus))
                                             {
                                                 <tr class="@child.InfoStr()">
-                                                    <td>@child.TaskName 
+                                                    <td><a href="@Url.Action("Detail", "Task", new { id = @child.ID })">@child.TaskName</a>
                                                     @if (child.TODO_TaskNodes.Count > 0)
                                             {
                                                 <span style="color:#eeefff; float: right;" title="@child.TODO_TaskNodes.Count 个任务节点" class="label label-success tip-right">@child.TODO_TaskNodes.Count</span>
@@ -230,10 +234,11 @@
                                                     else if (obj.TaskStatus == -1)
                                                     {@Html.Raw("已废止")}
                                                     </td> 
+                                                    <td>@child.ApprovalStr()</td>
                                                     <td>
                                                     @if(obj.TaskStatus != -1){
                                                         if (child.TaskStatus == 1)
-                                                        {<a href="#" onclick="addNewM(@child.ID)">延期</a> @Html.Raw("|")}
+                                                        {<a href="#" onclick="addNewM(@child.ID)">主动延期</a> @Html.Raw("|")}
                                                         if (child.TaskStatus == 0){
                                                        <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>@Html.Raw("|")}
                                                        <a onclick="return confirm('确认要废止吗！')" href="@Url.Action("Delete", "Task", new { id = @child.ID })">废止</a>

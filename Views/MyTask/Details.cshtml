@@ -87,7 +87,8 @@
                                 @if (n.Item2 != null && n.Item2.IsDone == 2)
                                 {@Html.Raw("disabled")} type="checkbox" id="@Html.Raw("check_")@n.Item1.ID" value="@n.Item1.ID" />*@
 							</div>
-							@if (n.Item2 == null || n.Item2.IsDone ==0){
+							@if ((n.Item2 == null || n.Item2.IsDone == 0) && Model.Status != -1)
+       {
                                 <label class="control-label">节点完成简述:</label>
 							    <div class="controls">
 								    <textarea name="ComplatedComments"></textarea>

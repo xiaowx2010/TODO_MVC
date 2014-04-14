@@ -26,6 +26,7 @@ namespace TODO.Controllers
             a.Add(new SelectListItem { Text = "---请选择---", Value = "-2", Selected = true });
             a.Add(new SelectListItem { Text = "未完成", Value = "1" });
             a.Add(new SelectListItem { Text = "已完成", Value = "2" });
+            a.Add(new SelectListItem { Text = "已通过", Value = "3" });
             a.Add(new SelectListItem { Text = "已废止", Value = "-1" });
 
             var StatusList = new SelectList(a, "Value", "Text", statusList);

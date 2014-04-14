@@ -25,6 +25,7 @@ namespace TODO.Controllers
             a.Add(new SelectListItem { Text = "未分配", Value = "0" });
             a.Add(new SelectListItem { Text = "已分配", Value = "1" });
             a.Add(new SelectListItem { Text = "已完成", Value = "2" });
+            a.Add(new SelectListItem { Text = "已通过", Value = "3" });
             a.Add(new SelectListItem { Text = "已废止", Value = "-1" });
 
             var StatusList = new SelectList(a, "Value", "Text", statusList);
@@ -35,8 +36,14 @@ namespace TODO.Controllers
             b.Add(new SelectListItem { Text = "有", Value = "有" });
             b.Add(new SelectListItem { Text = "无", Value = "无" });
             ViewData["DelayList"] = new SelectList(b, "Value", "Text", delayList);
-
             TaskDataContext db = new TaskDataContext();
+
+
+            DataLoadOptions ds = new DataLoadOptions();
+            ds.LoadWith<TODO_Tasks>(t => t.TODO_Task_User);
+            ds.LoadWith<TODO_Task_User>(u => u.TODO_Task_User_Node);
+            db.LoadOptions = ds;
+
             List<SelectListItem> c = new List<SelectListItem>();
             var typelist = from t in db.TODO_WorkType select t;
             c.Add(new SelectListItem { Text = "-请选择工作类别-", Value = "", Selected = true });
@@ -52,7 +59,7 @@ namespace TODO.Controllers
             //c.Add(new SelectListItem { Text = "其他工作", Value = "其他工作" });
             ViewData["WorkTypeList"] = new SelectList(c, "Value", "Text", worktypelist);
 
-            
+
             var users = from u in db.TODO_Users where u.IsAvailable select u;
             List<SelectListItem> userList = new List<SelectListItem>();
             userList.Add(new SelectListItem { Text = "-请选择责任人-", Value = "0", Selected = true });
@@ -74,19 +81,26 @@ namespace TODO.Controllers
                 UserList = userList
             };
 
-            var tasklist = from t in db.TODO_Tasks where t.ParentTaskID==null select t;
+            var tasklist = from t in db.TODO_Tasks where t.ParentTaskID == null select t;
             if (!string.IsNullOrWhiteSpace(taskName))
                 tasklist = tasklist.Where(u => u.TaskName.Contains(model.TaskName));
-            if (statusList >= -1)
-                tasklist = tasklist.Where(u => u.TaskStatus == model.TaskStatus);
+
             if (!string.IsNullOrWhiteSpace(worktypelist))
                 tasklist = tasklist.Where(u => u.WorkType == model.WorkType);
+
+            if (statusList >= -1)
+            {
+                var tt = tasklist.ToList().Where(u => u.HasStatus(statusList));
+                tasklist = tt.AsQueryable<TODO_Tasks>();
+            }
+
+
             if (!string.IsNullOrWhiteSpace(delayList))
             {
                 var tt = tasklist.ToList().Where(u => u.DelayStr() == delayList);
                 tasklist = tt.AsQueryable<TODO_Tasks>();
             }
-            if (userlist >0)
+            if (userlist > 0)
             {
                 var tt = tasklist.ToList().Where(u => u.HasUser(userlist));
                 tasklist = tt.AsQueryable<TODO_Tasks>();
@@ -94,6 +108,7 @@ namespace TODO.Controllers
 
             model.TaskList = tasklist.ToList<TODO_Tasks>();
             return View(model);
+
         }
 
         //
@@ -417,6 +432,8 @@ namespace TODO.Controllers
                     nlog.CreateDate = DateTime.Now;
                     db.TODO_User_Node_Logs.InsertOnSubmit(nlog);
 
+                    if (task.Parent_Task != null && task.TaskDeadLine.HasValue && task.TaskDeadLine.Value > task.TaskDeadLine.Value)
+                        task.Parent_Task.TaskDeadLine = task.TaskDeadLine.Value;
                     db.SubmitChanges();
 
                     return Json(new { status = "success", data = "" }, JsonRequestBehavior.DenyGet);
@@ -540,6 +557,8 @@ namespace TODO.Controllers
                 {
                     db.TODO_Task_User.DeleteAllOnSubmit(task.TODO_Task_User);
                 }
+                if (task.Parent_Task != null && task.TaskDeadLine.HasValue && task.TaskDeadLine.Value > task.TaskDeadLine.Value)
+                    task.Parent_Task.TaskDeadLine = task.TaskDeadLine.Value;
                 db.SubmitChanges();
                 return RedirectToAction("Index");
             }
