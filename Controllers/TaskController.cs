@@ -41,6 +41,7 @@ namespace TODO.Controllers
 
             DataLoadOptions ds = new DataLoadOptions();
             ds.LoadWith<TODO_Tasks>(t => t.TODO_Task_User);
+            //ds.LoadWith<TODO_Tasks>(t => t.TODO_DelayLog);
             ds.LoadWith<TODO_Task_User>(u => u.TODO_Task_User_Node);
             db.LoadOptions = ds;
 
@@ -81,7 +82,7 @@ namespace TODO.Controllers
                 UserList = userList
             };
 
-            var tasklist = from t in db.TODO_Tasks where t.ParentTaskID == null select t;
+            var tasklist = from t in db.TODO_Tasks where t.ParentTaskID == null && t.TaskStatus<99 select t;
             if (!string.IsNullOrWhiteSpace(taskName))
                 tasklist = tasklist.Where(u => u.TaskName.Contains(model.TaskName));
 
@@ -130,6 +131,12 @@ namespace TODO.Controllers
             }
             ViewData["WorkType"] = new SelectList(c, "Value", "Text", "");
 
+            List<SelectListItem> l = new List<SelectListItem>();
+            l.Add(new SelectListItem { Text = "-请选择汇报领导-", Value = "", Selected = true });
+            userlist.Where(u => u.UserRole == 1).ToList().ForEach(leader => {
+                l.Add(new SelectListItem { Text = leader.PersonName, Value = leader.PersonName });
+            });
+            ViewData["LeaderList"] = new SelectList(l, "Value", "Text", "");
             return View(userlist.ToList<TODO_Users>());
         } 
 
@@ -147,6 +154,7 @@ namespace TODO.Controllers
                 newtask.Priority = Convert.ToInt32(collection["Priority"]);
                 newtask.TaskType = collection["TaskType"];
                 newtask.WorkType = collection["WorkType"];
+                newtask.Leader = collection["LeaderList"];
                 if (!string.IsNullOrWhiteSpace(collection["TaskDeadLine"]))
                     newtask.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
                 newtask.TaskRemark = collection["TaskRemark"];
@@ -184,9 +192,12 @@ namespace TODO.Controllers
             }
             
         }
-        public ActionResult Detail(int id)
+        public ActionResult Detail(int id, int IsHistory = 0)
         {
-            ViewBag.ActiveType = "TaskControl";
+            if (IsHistory == 0)
+                ViewBag.ActiveType = "TaskControl";
+            else
+                ViewBag.ActiveType = "HistoryTask";
             TaskDataContext db = new TaskDataContext();
             DataLoadOptions ds = new DataLoadOptions();
             ds.LoadWith<TODO_Tasks>(t => t.TODO_TaskNodes);
@@ -479,6 +490,15 @@ namespace TODO.Controllers
             var nodelist = from n in db.TODO_TaskNodes where n.TaskID == task.ID select n;
             ViewData["TaskExecutor"] = selectList;
             ViewData["nodelist"] = nodelist.ToList<TODO_TaskNodes>();
+
+
+            List<SelectListItem> l = new List<SelectListItem>();
+            l.Add(new SelectListItem { Text = "-请选择汇报领导-", Value = "" });
+            userlist.Where(u => u.UserRole == 1).ToList().ForEach(leader =>
+            {
+                l.Add(new SelectListItem { Text = leader.PersonName, Value = leader.PersonName });
+            });
+            ViewData["LeaderList"] = new SelectList(l, "Value", "Text", task.Leader);
         }
 
         //
@@ -503,6 +523,7 @@ namespace TODO.Controllers
                 task.TaskDeadLine = DateTime.Parse(collection["TaskDeadLine"]);
                 task.TaskRemark = collection["TaskRemark"];
                 task.TaskStatus = Convert.ToInt32(collection["TaskStatus"]);
+                task.Leader = collection["LeaderList"];
                 if (!task.TaskAssignDate.HasValue && task.TaskStatus == 1){
                     task.TaskAssignDate = DateTime.Now;
                     if (task.Parent_Task != null)
@@ -610,6 +631,7 @@ namespace TODO.Controllers
                 if (task == null)
                     throw new Exception("该任务不存在！");
                 task.TaskStatus = -1;
+                task.DeleteDate = DateTime.Now;
                 foreach (var t in task.Child_Tasks)
                 {
                     foreach (var ta in t.TODO_Task_User)
@@ -617,17 +639,13 @@ namespace TODO.Controllers
                         ta.Status = -1;
                     }
                     t.TaskStatus = -1;
+                    t.DeleteDate = DateTime.Now;
                 }
                 foreach (var t in task.TODO_Task_User)
                 {
                     t.Status = -1;
                 }
                 db.SubmitChanges();
-                //string msg = TaskDAO.Instance.DeleteTask(id);
-                //if (msg != "success")
-                //{
-                //    delmsg = "删除失败！原因：" + msg;
-                //}
             }
             catch (Exception ex)
             {
@@ -638,6 +656,40 @@ namespace TODO.Controllers
 
         }
 
+        public ActionResult Archive(int id)
+        {
+            string delmsg = "";
+            TaskDataContext db = new TaskDataContext();
+            var task = db.TODO_Tasks.SingleOrDefault<TODO_Tasks>(s => s.ID == id);
+            try
+            {
+                if (task == null)
+                    throw new Exception("该任务不存在！");
+                task.TaskStatus = 99;
+                task.ArchiveDate = DateTime.Now;
+                foreach (var t in task.Child_Tasks)
+                {
+                    foreach (var ta in t.TODO_Task_User)
+                    {
+                        ta.Status = 99;
+                    }
+                    t.TaskStatus = 99;
+                    t.ArchiveDate = DateTime.Now;
+                }
+                foreach (var t in task.TODO_Task_User)
+                {
+                    t.Status = 99;
+                }
+                db.SubmitChanges();
+            }
+            catch (Exception ex)
+            {
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
+                delmsg = "归档失败！原因：" + ex.ToString();
+            }
+            return RedirectToAction("Index", new { operateMsg = delmsg });
+
+        }
         [HttpPost]
         public ActionResult Delay(FormCollection collection)
         {
@@ -652,8 +704,8 @@ namespace TODO.Controllers
                 var task = db.TODO_Tasks.SingleOrDefault<TODO_Tasks>(s => s.ID == id);
                 DateTime pervDate = task.TaskDeadLine.Value;
                 task.TaskDeadLine = delaydate;
-                if (realdelay == 1)
-                {
+                //if (realdelay == 1)
+                //{
                     TODO_DelayLog log = new TODO_DelayLog();
 
                     log.DelayDate = delaydate;
@@ -661,9 +713,9 @@ namespace TODO.Controllers
                     log.Reason = collection["Reason"];
                     log.TODO_Tasks = task;
                     log.Creator = (Session["TODOUser"] as TODO_Users).UserName;
-
+                    log.DelayType = realdelay;
                     task.TODO_DelayLog.Add(log);
-                }
+                //}
                 db.SubmitChanges();
 
 

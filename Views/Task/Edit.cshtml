@@ -50,6 +50,12 @@
 							</div>
 						</div>
 						<div class="control-group">
+							<label class="control-label">汇报领导:</label>
+							<div class="controls">
+                            @Html.DropDownList("LeaderList", null, new { })
+							</div>
+						</div>
+						<div class="control-group">
 							<label class="control-label">优先级:</label>
 							<div class="controls">
 								<select name="Priority" id="Priority">
@@ -58,10 +64,6 @@
 								    <option value="3">3</option>
 								    <option value="4">4</option>
 								    <option value="5">5</option>
-								    <option value="6">6</option>
-								    <option value="7">7</option>
-								    <option value="8">8</option>
-								    <option value="9">9</option>
 							    </select>
 							</div>
 						</div>

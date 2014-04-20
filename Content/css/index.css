@@ -3,13 +3,13 @@
 }
 
 .subTable {
-	width: 90%;
-	margin-left: 40px;
+	width: 95%;
+	margin-left: 20px;
 	border-collapse: separate;
 }
 
 .subTable td:first-child{
-	width: 35%;
+	width: 26%;
 }
 
 
@@ -19,7 +19,7 @@
 	border-right: 1px solid #AAA;
 }
 #content-table .subTable td {
-	padding: 1px 10px;
+	padding: 1px 5px;
 }
 #content-table a:hover {
 	text-decoration: underline;

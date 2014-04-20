@@ -14,7 +14,7 @@
 					<span class="icon">
 						<i class="icon-align-justify"></i>									
 					</span>
-					<h5>任务详情1</h5>
+					<h5>任务详情</h5>
 				</div>
 				<div class="form-horizontal widget-content nopadding">
                 <div class="row-fluid">
@@ -43,6 +43,10 @@
                             {@Html.Raw("已分配")}
                             else if (Model.TaskStatus == 2)
                             {@Html.Raw("已完成")}
+                            else if (Model.TaskStatus == 3)
+                            {@Html.Raw("已废止")}
+                            else if (Model.TaskStatus == 99)
+                            {@Html.Raw("已归档")}
                             else if (Model.TaskStatus == -1)
                             {@Html.Raw("已废止")}" />
 							</div>
@@ -97,7 +101,7 @@
                             {
                                 <a href="javascript:void(0)" onclick="showApproval(@task_user.ID, @node.ID, this)"><img alt="审核" src="/Content/img/btn_01.gif" /></a>
                             }
-                            @if(node.GetUserNodeStatusStr(@task_user.ID) != "已通过")
+                            @if (node.GetUserNodeStatusStr(@task_user.ID) != "已通过")
                             {
                                 <a href="javascript:void(0)" onclick="showDelay(@task_user.ID, @node.ID, this)"><img alt="延续期" src="/Content/img/btn_02.gif" /></a>
                             }
