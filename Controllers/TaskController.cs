@@ -620,7 +620,24 @@ namespace TODO.Controllers
                 task.TODO_TaskNodes.Add(node);
             }
         }
-
+        public ActionResult Copy(int id)
+        {
+            string copymsg = "";
+            try
+            {
+                string msg = TaskDAO.Instance.Copy(id);
+                if (msg != "success")
+                {
+                    copymsg = "生成子任务失败！原因：" + msg;
+                }
+            }
+            catch (Exception ex)
+            {
+                Common.WriteFile(ex.ToString(), Server.MapPath("/") + DateTime.Now.ToString("yyyy-MM-dd") + "_Exception.log");
+                copymsg = "复制失败！原因：" + ex.ToString();
+            }
+            return RedirectToAction("Index", new { operateMsg = copymsg });
+        }
         public ActionResult Delete(int id)
         {
             string delmsg = "";

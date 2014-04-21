@@ -38,9 +38,9 @@
                         var nCell = document.createElement('td');
                         nCell.colSpan = iColspan;
                         nCell.align = "left";
-                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(11).attr("id");
+                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(12).attr("id");
                         nCell.className = "group";
-                        nCell.innerHTML = nTrs.eq(i).find("td").eq(11).html();
+                        nCell.innerHTML = nTrs.eq(i).find("td").eq(12).html();
                         nGroup.appendChild(nCell);
                         $(nGroup).insertAfter(nTrs[i]);
                         groupVal = sGroup;
@@ -220,7 +220,9 @@
                                            {<a href="#" onclick="addNewM(@obj.ID)">主动延期</a> @Html.Raw("|")}
                                             if (obj.StatusStr() == "未分配")
                                             {<a href="@Url.Action("Edit", "Task", new { id = @obj.ID })">修改 </a> @Html.Raw("|")}
-                                            if (obj.TaskStatus < 3 && obj.TaskStatus >-1)
+                                            if(obj.Child_Tasks.Count==0){
+                                            <a onclick="return confirm('确认要复制吗！')" href="@Url.Action("Copy", "Task", new { id = @obj.ID })">复制 </a> @Html.Raw("|")}
+                                            if (obj.TaskStatus < 3 && obj.TaskStatus > -1)
                                             {<a onclick="return confirm('确认要废止吗,子任务会一同废止！')" href="@Url.Action("Delete", "Task", new { id = @obj.ID })">废止</a>}
                                         }
                                             @if (obj.TaskStatus == 3 || obj.TaskStatus == -1)
@@ -264,11 +266,12 @@
                                                         if (child.TaskStatus == 0)
                                                         {
                                                        <a href="@Url.Action("Edit", "Task", new { id = @child.ID })">修改 </a>@Html.Raw("|")}
+                                                       <a href="@Url.Action("Copy", "Task", new { id = @child.ID })">复制 </a> @Html.Raw("|")
                                                         if (child.TaskStatus < 3 && child.TaskStatus > -1)
                                                         {<a onclick="return confirm('确认要废止吗！')" href="@Url.Action("Delete", "Task", new { id = @child.ID })">废止</a>}
                                                     }    
                                                     @if (child.TaskStatus == 3 || child.TaskStatus == -1)
-                                                        {<a onclick="return confirm('确认要归档吗！')" href="@Url.Action("Archive", "Task", new { id = @child.ID })">归档</a>}
+                                                    {<a onclick="return confirm('确认要归档吗！')" href="@Url.Action("Archive", "Task", new { id = @child.ID })">归档</a>}
                                                     
                                                     </td>
                                                 </tr>

@@ -14,7 +14,8 @@
 					<span class="icon">
 						<i class="icon-align-justify"></i>									
 					</span>
-					<h5>修改任务</h5>
+					<h5>修改任务 @if (Model.OriginalTask != null)
+              {@Html.Raw("（本任务由") <a target="_blank" href="@Url.Action("Detail", "Task", new { id = @Model.OriginalTask.ID })">@Model.OriginalTask.TaskName</a> @Html.Raw("复制生成。）")} </h5>
 				</div>
 				<div class="widget-content nopadding">
 					@using (Html.BeginForm("Edit", "Task", FormMethod.Post, new { @class = "form-horizontal", id = "create" }))
@@ -38,7 +39,7 @@
 						<div class="control-group">
 							<label class="control-label">工作类别:</label>
 							<div class="controls">
-                            @Html.DropDownList("WorkType", null, new {})
+                            @Html.DropDownList("WorkType", null, new { })
 								@*<select name="WorkType" id="WorkType">
 								    <option>信息中心</option>
 								    <option>信息化建设与应用工作</option>
