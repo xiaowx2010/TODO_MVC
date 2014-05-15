@@ -38,9 +38,9 @@
                         var nCell = document.createElement('td');
                         nCell.colSpan = iColspan;
                         nCell.align = "left";
-                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(11).attr("id");
+                        nCell.id = "group_" + nTrs.eq(i).find("td").eq(10).attr("id");
                         nCell.className = "group";
-                        nCell.innerHTML = nTrs.eq(i).find("td").eq(11).html();
+                        nCell.innerHTML = nTrs.eq(i).find("td").eq(10).html();
                         nGroup.appendChild(nCell);
                         $(nGroup).insertAfter(nTrs[i]);
                         groupVal = sGroup;
@@ -78,7 +78,7 @@
 <div id="content-header">
 				<h1>历史任务</h1>
 			</div>
-			@using (Html.BeginForm("Index", "Task", FormMethod.Get)){
+			@using (Html.BeginForm("Index", "History", FormMethod.Get)){
             <div id="breadcrumb">
                 <div style="float:left; margin-left:10px; margin-top:10px">
                 <b style="float:left; margin-top:5px;">检索：</b>
@@ -97,7 +97,7 @@
                 @Html.DropDownList("StatusList", null, new {style = "float:left; width:150px" })
                 <input type="submit" value="查询" class='btn btn-primary' style="float:left; margin-left:10px;"/>
                 </div>
-                            <input type='button' value="新增任务" style="margin-right: 20px; margin-top:10px;" onclick="location.href='@Url.Action("Create", "Task")'" class='btn btn-primary subcat_hide' />
+                            @*<input type='button' value="新增任务" style="margin-right: 20px; margin-top:10px;" onclick="location.href='@Url.Action("Create", "Task")'" class='btn btn-primary subcat_hide' />*@
 			            </div>
             }
 			<div class="container-fluid">

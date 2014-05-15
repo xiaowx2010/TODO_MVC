@@ -405,22 +405,22 @@ namespace TODO.Controllers
                         db.SubmitChanges();
                     }
 
-                     var ddate = Convert.ToDateTime(delaydate);
-                     var task = user_node.TODO_Task_User.TODO_Tasks;
-                     DateTime pervDate = task.TaskDeadLine.Value;
-                     task.TaskDeadLine = ddate;
-                     if (realdelay)
-                     {
-                         TODO_DelayLog log = new TODO_DelayLog();
+                    var ddate = Convert.ToDateTime(delaydate);
+                    var task = user_node.TODO_Task_User.TODO_Tasks;
+                    DateTime pervDate = task.TaskDeadLine.Value;
+                    task.TaskDeadLine = ddate;
+                    int delaytype = realdelay ? 1 : 0;
+                   
+                    TODO_DelayLog log = new TODO_DelayLog();
 
-                         log.DelayDate = ddate;
-                         log.PreviousDate = pervDate;
-                         log.Reason = reason;
-                         log.TODO_Tasks = task;
-                         log.Creator = (Session["TODOUser"] as TODO_Users).UserName;
-
-                         task.TODO_DelayLog.Add(log);
-                     }
+                    log.DelayDate = ddate;
+                    log.PreviousDate = pervDate;
+                    log.Reason = reason;
+                    log.TODO_Tasks = task;
+                    log.Creator = (Session["TODOUser"] as TODO_Users).UserName;
+                    log.DelayType = delaytype;
+                    task.TODO_DelayLog.Add(log);
+                     
                     
                     string LogType = "";
                     if (realdelay)
