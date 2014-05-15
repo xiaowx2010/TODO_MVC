@@ -15,6 +15,7 @@
 						<i class="icon-align-justify"></i>									
 					</span>
 					<h5>任务详情</h5>
+                    <h5>任务创建时间： @Model.CreatedDate</h5>
 				</div>
 				<div class="form-horizontal widget-content nopadding">
                 <div class="row-fluid">
@@ -77,6 +78,7 @@
 						<i class="icon-magnet"></i>									
 					</span>
 					<h5>子任务：@child.TaskName</h5>
+                    <h5>任务创建时间： @child.CreatedDate</h5>
                     @*<h5>截止日期：@if (@child.TaskDeadLine.HasValue)
                              {@child.TaskDeadLine.Value.ToShortDateString()}</h5>
                     @if (child.TODO_DelayLog.Count > 0)

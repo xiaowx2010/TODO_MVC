@@ -32,7 +32,7 @@
 								<select name="TaskType" id="TaskType">
 								    @*<option>固定任务</option>
 								    <option>周期任务</option>*@
-								    <option>考核任务</option>
+								    <option>日常任务</option>
 							    </select>
 							</div>
 						</div>
@@ -51,7 +51,7 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label">汇报领导:</label>
+							<label class="control-label">分管领导:</label>
 							<div class="controls">
                             @Html.DropDownList("LeaderList", null, new { })
 							</div>
@@ -113,18 +113,18 @@
                         @foreach (var node in ViewData["nodelist"] as List<TODO_TaskNodes>)
                         {
                         <div class="control-group">
-                            <label class="control-label">任务节点:</label>
+                            <label class="control-label">工作要求:</label>
 							<div class="controls">
 								<textarea name="NodeRemark">@node.NodeName</textarea>
-                                <input type="button" class="btn btn-danger" value="删除任务节点" onclick="CreateTaskNode(this)" />
+                                <input type="button" class="btn btn-danger" value="删除工作要求" onclick="CreateTaskNode(this)" />
 							</div>
 						</div>
                         }
                         <div class="control-group">
-                            <label class="control-label">任务节点:</label>
+                            <label class="control-label">工作要求:</label>
 							<div class="controls">
 								<textarea name="NodeRemark"></textarea>
-                                <input type="button" class="btn btn-success" value="新增任务节点" onclick="CreateTaskNode(this)" />
+                                <input type="button" class="btn btn-success" value="新增工作要求" onclick="CreateTaskNode(this)" />
 							</div>
 						</div>
                          </div>
@@ -180,13 +180,13 @@ function Save()
                 nextarea.val('');
                 $(btn).parent().parent().after(next);
                 $(btn).removeClass('btn-success').addClass('btn-danger');
-                $(btn).val("删除任务节点");
+                $(btn).val("删除工作要求");
                 nextarea.focus();
             }
             else {
                 if (!$(btn).parent().parent().next().find("input").hasClass('btn-danger')&&!$(btn).parent().parent().next().find("input").hasClass('btn-success')) {
                         $(btn).removeClass('btn-danger').addClass('btn-success');
-                        $(btn).val("新增任务节点");
+                        $(btn).val("新增工作要求");
                 }
                 $(btn).parent().parent().remove();
             }
