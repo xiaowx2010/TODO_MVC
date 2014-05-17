@@ -137,6 +137,16 @@ namespace TODO.Controllers
                 l.Add(new SelectListItem { Text = leader.PersonName, Value = leader.PersonName });
             });
             ViewData["LeaderList"] = new SelectList(l, "Value", "Text", "");
+
+            List<SelectListItem> p = new List<SelectListItem>();
+            var plist = from ps in db.TODO_Priority select ps;
+            foreach (var i in plist)
+            {
+                p.Add(new SelectListItem { Text = i.priority.ToString() + '-' + i.name, Value = i.id.ToString() });
+            }
+            ViewData["PriorityType"] = new SelectList(p, "Value", "Text", "");
+
+
             return View(userlist.ToList<TODO_Users>());
         } 
 
@@ -476,6 +486,13 @@ namespace TODO.Controllers
             }
             ViewData["WorkType"] = new SelectList(c, "Value", "Text", task.WorkType);
 
+            List<SelectListItem> p = new List<SelectListItem>();
+            var plist = from ps in db.TODO_Priority select ps;
+            foreach (var i in plist)
+            {
+                p.Add(new SelectListItem { Text = i.priority.ToString() + '-' + i.name, Value = i.id.ToString() });
+            }
+            ViewData["PriorityType"] = new SelectList(p, "Value", "Text", task.Priority);
 
             Init_detail_date(db, task);
             return View(task);
