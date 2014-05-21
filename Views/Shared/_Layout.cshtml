@@ -68,6 +68,8 @@
            {@Html.Raw("class=\"active\"")}><a href="/WorkType"><i class="icon icon-book"></i> <span>工作类别管理</span></a></li>
        <li @if (ViewBag.ActiveType == "Priority")
            {@Html.Raw("class=\"active\"")}><a href="/Priority"><i class="icon icon-retweet"></i> <span>优先级管理</span></a></li>
+       <li @if (ViewBag.ActiveType == "Desc")
+           {@Html.Raw("class=\"active\"")}><a href="/Desc"><i class="icon icon-folder-open"></i> <span>字典数据管理</span></a></li>
    }
 		</ul>
 	</div>

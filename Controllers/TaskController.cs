@@ -465,6 +465,22 @@ namespace TODO.Controllers
                 return Json(new { status = "error", data = ex.Message });
             }
         }
+
+        public JsonResult GetDescList(string startsWith, string type)
+        {
+            try
+            {
+                using (TaskDataContext db = new TaskDataContext())
+                {
+                    var desclist = db.TODO_Desc.Where<TODO_Desc>(d => d.in_use && d.type == type && d.description.Contains(startsWith)).Select(d => d.description).ToList<string>();
+                    return Json(desclist, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", data = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
         //
         // GET: /Task/Edit/5
  

@@ -1,0 +1,118 @@
+﻿@model List<TODO.PersistObject.models.TODO_Desc>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.data-table').dataTable({
+            "aaSorting": [[0, "asc"]],
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "sDom": '<""l>t<"F"fp>',
+            "bFilter": true,
+            "oLanguage": {
+                "sLengthMenu": "每页显示 _MENU_ 条记录",
+                "sZeroRecords": "对不起，查询不到任何相关数据",
+                "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_ 条记录",
+                "sInfoEmtpy": "找不到相关数据",
+                "sInfoFiltered": "数据表中共为 _MAX_ 条记录)",
+                "sProcessing": "正在加载中...",
+                "sSearch": "搜索",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "第一页",
+                    "sPrevious": " 上一页 ",
+                    "sNext": " 下一页 ",
+                    "sLast": " 最后一页 "
+                }
+            },
+            "aoColumns": [
+			null, null, null, 
+			{ "asSorting": [] }
+		]
+
+
+        });
+        
+        $('select').not("#StatusList").select2();
+
+        $("span.icon input:checkbox, th input:checkbox").click(function () {
+            var checkedStatus = this.checked;
+            var checkbox = $(this).parents('.widget-box').find('tr td:first-child input:checkbox');
+            checkbox.each(function () {
+                this.checked = checkedStatus;
+                if (checkedStatus == this.checked) {
+                    $(this).closest('.checker > span').removeClass('checked');
+                }
+                if (this.checked) {
+                    $(this).closest('.checker > span').addClass('checked');
+                }
+            });
+        });
+    });
+
+    </script>
+<div id="content-header">
+    <h1>
+        字典数据管理</h1>
+</div>
+<div id="breadcrumb">
+    <div style="float:left; margin-left:10px; margin-top:10px; margin-bottom:10px;"></div>
+        <input type='button' value="新增字典数据" style="margin-right: 20px; margin-top:10px; margin-bottom:10px;" onclick="location.href='@Url.Action("Create", "Desc")'"
+            class='btn btn-primary subcat_hide' />
+    
+</div>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="widget-box">
+                <div class="widget-title">
+                    <h5>
+                    </h5>
+                </div>
+                <div class="widget-content nopadding">
+                    <table id="content-table" class="table table-bordered data-table">
+                        <thead>
+                            <tr>
+                                <th width="150px">
+                                    类别
+                                </th>
+                                <th width="90px">
+                                    是否启用
+                                </th>
+                                <th>
+                                    详细信息
+                                </th>
+                                <th width="180px">
+                                    操作
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var obj in Model)
+                            {
+                                <tr class="gradeA">
+                                    <td>
+                                        @obj.type
+                                    </td>
+                                    <td>
+                                        @obj.in_use
+                                    </td>
+                                    <td>
+                                        @obj.description
+                                    </td>
+                                   
+                                    <td class="center">
+                                        <a href="@Url.Action("Edit", "Desc", new { id = @obj.id })">修改 </a>| 
+                                        <a onclick="return confirm('确认要删除吗！')" href="@Url.Action("Delete", "Desc", new { id = @obj.id })">
+                                            删除</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

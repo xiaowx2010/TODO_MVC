@@ -23,7 +23,8 @@
 						<div class="control-group">
 							<label class="control-label">任务名:</label>
 							<div class="controls">
-								<input name="TaskName" type="text" />
+								<input class="auto_complate_item_subject" name="TaskName" type="text" />
+                                <input type="button" class="small-btn btn-success" value="保存" onclick="SaveDesc(this, '任务名')" />
 							</div>
 						</div>
 						<div class="control-group">
@@ -102,8 +103,9 @@
                         <div class="control-group">
 							<label class="control-label">工作要求:</label>
 							<div class="controls">
-								<textarea name="NodeRemark"></textarea>
+								<textarea class="auto_complate_item_node" name="NodeRemark"></textarea>
                                 <input type="button" class="btn btn-success" value="新增工作要求" onclick="CreateTaskNode(this)" />
+                                <input type="button" class="small-btn btn-success" value="保存" onclick="SaveDesc(this, '工作要求')" />
 							</div>
 						</div>
                         </div>
@@ -154,6 +156,26 @@ function Save()
             $("#create").submit();
         }
     }
+    function SaveDesc(btn, type)
+    {
+        var a = $(btn).parent();
+        var desc = $(a.children()[0]).val()
+        if(desc == ""){
+            alert("请输入"+type);
+            return;
+        }
+        if(!confirm("确定要保存么？"))
+            return;
+         var url = "/Desc/SaveDesc";
+         $.post(url, { desc: desc, type: type}, function (data) {
+             if (data.status == "success") {
+                 alert("保存成功！");
+             }
+             else {
+                 alert(data.data);
+             }
+         }, "json");
+    }
     function CreateTaskNode(btn){
          if ($(btn).hasClass('btn-success')) {
                 var next = $(btn).parent().parent().clone();
@@ -171,6 +193,22 @@ function Save()
                 }
                 $(btn).parent().parent().remove();
             }
+          $( ".auto_complate_item_node" ).autocomplete({
+          source: function( request, response ) {
+            $.ajax({
+              url: "/Task/GetDescList",
+              dataType: "json",
+              data: {
+                type: "工作要求",
+                startsWith: request.term
+              },
+              success: function( data ) {
+                response( data );
+              }
+            });
+          },
+          minLength: 2
+        });
     }
     $(document).ready(function () {
         $("#create").validate({
@@ -195,5 +233,38 @@ function Save()
         $('input[type=checkbox]').uniform();
         $('.datepicker').datepicker();
         $('.multiple__select').select2();
+       
+        $( ".auto_complate_item_subject" ).autocomplete({
+          source: function( request, response ) {
+            $.ajax({
+              url: "/Task/GetDescList",
+              dataType: "json",
+              data: {
+                type: "任务名",
+                startsWith: request.term
+              },
+              success: function( data ) {
+                response( data );
+              }
+            });
+          },
+          minLength: 2
+        });
+        $( ".auto_complate_item_node" ).autocomplete({
+          source: function( request, response ) {
+            $.ajax({
+              url: "/Task/GetDescList",
+              dataType: "json",
+              data: {
+                type: "工作要求",
+                startsWith: request.term
+              },
+              success: function( data ) {
+                response( data );
+              }
+            });
+          },
+          minLength: 2
+        });
     });
 </script>

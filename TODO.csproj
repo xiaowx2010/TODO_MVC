@@ -74,6 +74,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\WorkTypeController.cs" />
     <Compile Include="Controllers\PriorityController.cs" />
+    <Compile Include="Controllers\DescController.cs" />
     <Compile Include="Custom\BaseController.cs" />
     <Compile Include="Custom\Common.cs" />
     <Compile Include="Custom\CustomAuthorizeAttribute.cs" />
@@ -348,6 +349,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Priority\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Desc\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Desc\Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Desc\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
